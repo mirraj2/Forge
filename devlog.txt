@@ -1,0 +1,12 @@
+2/7/15
+
+save tilesets and tileset metadata to the filesystem automatically.
+  for now, we'll just do it on exit
+
+have it load that data on startup
+
+link objects to the action bar
+
+add objects to different layers of the map
+
+add view options for only showing certain layers and showing the grid, etc

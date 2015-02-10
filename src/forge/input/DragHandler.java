@@ -40,6 +40,11 @@ public class DragHandler {
       BufferedImage bi = IO.from(file).toImage();
       String name = file.getName();
 
+      int i = name.lastIndexOf('.');
+      if (i >= 0) {
+        name = name.substring(0, i);
+      }
+
       forge.armory.importTileset(name, bi);
     }
   }

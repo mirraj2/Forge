@@ -1,31 +1,66 @@
 package armory;
 
+import jasonlib.IO;
+import jasonlib.Json;
+import jasonlib.Rect;
 import jasonlib.swing.component.GPanel;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.Set;
+import java.io.File;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JScrollPane;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 public class TilesetPanel extends GPanel {
 
   public final Armory armory;
+  public final int id;
   public final String name;
   public final BufferedImage bi;
   public final ObjectDetailsPanel objectPanel;
   public final ImagePanel imagePanel;
 
-  public final Set<MapObject> mapObjects = Sets.newLinkedHashSet();
+  public final List<MapObject> mapObjects = Lists.newArrayList();
 
-  public TilesetPanel(Armory armory, String name, BufferedImage bi) {
+  public TilesetPanel(Armory armory, int id, String name, BufferedImage bi) {
     this.armory = armory;
+    this.id = id;
     this.name = name;
     this.bi = bi;
-    this.objectPanel = new ObjectDetailsPanel(this, bi);
+    this.objectPanel = new ObjectDetailsPanel(this);
     this.imagePanel = new ImagePanel(this, bi, objectPanel);
 
     initUI();
+  }
+
+  public static TilesetPanel load(Armory armory, File dir, int id) {
+    BufferedImage bi = IO.from(new File(dir, id + ".png")).toImage();
+
+    Json json = IO.from(new File(dir, id + ".json")).toJson();
+    TilesetPanel ret = new TilesetPanel(armory, json.getInt("id"), json.get("name"), bi);
+
+    for (Json object : json.getJson("objects").asJsonArray()) {
+      MapObject o = MapObject.load(object, bi);
+      ret.mapObjects.add(o);
+      armory.resourcesPanel.add(o);
+    }
+
+    return ret;
+  }
+
+  public void save(File dir) {
+    File imageFile = new File(dir, id + ".png");
+    if (!imageFile.exists()) {
+      IO.from(bi).to(imageFile);
+    }
+
+    Json json = Json.object()
+        .with("id", id)
+        .with("name", name)
+        .with("objects", Json.array(mapObjects, o -> o.toJson()));
+
+    IO.from(json).to(new File(dir, id + ".json"));
   }
 
   private void initUI() {
@@ -40,9 +75,18 @@ public class TilesetPanel extends GPanel {
     add(objectPanel, "alignx center, aligny top");
   }
 
-  public void onSave(MapObject object) {
-    mapObjects.add(object);
+  public void onSelection(Rect selection) {
+    MapObject m = new MapObject(MapObject.idCounter++, bi, selection);
+    mapObjects.add(m);
     imagePanel.selection = null;
+    objectPanel.load(m);
+    armory.resourcesPanel.add(m);
+  }
+
+  public void delete(MapObject object) {
+    mapObjects.remove(object);
+    imagePanel.selection = null;
+    armory.resourcesPanel.remove(object);
   }
 
 }

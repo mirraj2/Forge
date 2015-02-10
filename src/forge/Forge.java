@@ -17,12 +17,14 @@ public class Forge extends GPanel {
 
   public static final int TILE_SIZE = 16;
 
-  public final ToolPanel toolPanel = new ToolPanel();
   public final Armory armory = new Armory(this);
+  public final ToolPanel toolPanel = new ToolPanel(armory);
 
   public Forge() {
     add(toolPanel, "pos 0% 90% 100% 100%");
     add(armory, "pos 5% 0% 95% 90%");
+
+    setFocusable(true);
 
     new KeyboardHandler(this);
     new MouseHandler(this);
@@ -35,10 +37,21 @@ public class Forge extends GPanel {
     repaint();
   };
 
+  private Runnable saveAndExit = () -> {
+    armory.save();
+    toolPanel.save();
+    System.exit(0);
+  };
+
   public static void main(String[] args) {
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
     Forge forge = new Forge();
-    GFrame frame = new GFrame("The Forge").content(forge).size(dim.width - 100, dim.height - 100).start();
+    GFrame frame = new GFrame("The Forge")
+        .content(forge)
+        .size(dim.width - 100, dim.height - 100)
+        .disposeOnClose()
+        .onClose(forge.saveAndExit)
+        .start();
     frame.setBackground(Color.black);
     GFocus.focus(forge);
   }

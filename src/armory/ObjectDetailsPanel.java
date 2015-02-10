@@ -1,69 +1,102 @@
 package armory;
 
-import jasonlib.Rect;
+import static java.lang.Integer.parseInt;
+import jasonlib.swing.Graphics3D;
 import jasonlib.swing.component.GButton;
+import jasonlib.swing.component.GCheckbox;
 import jasonlib.swing.component.GLabel;
 import jasonlib.swing.component.GPanel;
 import jasonlib.swing.component.GTextField;
+import jasonlib.swing.global.Components;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import javax.swing.JComponent;
 
 public class ObjectDetailsPanel extends GPanel {
 
   private final TilesetPanel parent;
-  private final JLabel imageLabel = new JLabel();
-  private final BufferedImage bi;
+  private final ObjectRenderer objectRenderer;
   private final GTextField tagsInput = new GTextField();
+  private final GCheckbox autotile = new GCheckbox("Autotile").color(Color.white);
+  private final GTextField rowsInput = new GTextField().columns(3).focusSelects();
+  private final GTextField colsInput = new GTextField().columns(3).focusSelects();
+  private final GButton deleteButton = new GButton("Delete");
   private MapObject selected = null;
 
-  public ObjectDetailsPanel(TilesetPanel parent, BufferedImage bi) {
+  public ObjectDetailsPanel(TilesetPanel parent) {
     this.parent = parent;
-    this.bi = bi;
-    add(imageLabel, "span, wrap");
+
+    add(objectRenderer = new ObjectRenderer(), "span, wrap 10");
+    add(autotile, "span, wrap");
+    add(new GLabel("Animate").color(Color.white), "");
+    add(colsInput, "split");
+    add(rowsInput, "wrap");
     add(new GLabel("Tags:").color(Color.white), "");
     add(tagsInput, "wrap");
-    add(new GButton(saveAction), "span");
+    add(deleteButton, "span");
 
-    tagsInput.onEnter(() -> {
-      saveAction.actionPerformed(null);
-    });
+    listen();
 
     setVisible(false);
   }
 
+  private int parse(String s) {
+    try {
+      return parseInt(s);
+    } catch (Exception e) {
+      return 0;
+    }
+  }
+
   public void load(MapObject o) {
     this.selected = o;
-    tagsInput.setText(o.tags);
-    imageLabel.setIcon(new ImageIcon(selected.subimage));
 
+    Components.refresh(objectRenderer);
+    autotile.setSelected(o.autotile);
+    rowsInput.setText(o.animationRows + "");
+    colsInput.setText(o.animationCols + "");
+    tagsInput.setText(selected.tags);
     setVisible(true);
     tagsInput.requestFocusInWindow();
   }
 
-  public void onSelection(Rect selection) {
-    selected = new MapObject(bi, selection);
-
-    imageLabel.setIcon(new ImageIcon(selected.subimage));
-    tagsInput.setText("");
-    
-    setVisible(true);
-    tagsInput.requestFocusInWindow();
-  }
-
-  private Action saveAction = new AbstractAction("Save") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
+  private void listen() {
+    tagsInput.onChange(() -> {
       selected.tags = tagsInput.getText();
-      parent.onSave(selected);
-      imageLabel.setIcon(null);
-      tagsInput.setText("");
+    });
+
+    rowsInput.onChange(() -> {
+      selected.animate(parse(rowsInput.getText()), selected.animationCols);
+    });
+
+    colsInput.onChange(() -> {
+      selected.animate(selected.animationRows, parse(colsInput.getText()));
+    });
+
+    autotile.onChange(() -> {
+      selected.autotile = autotile.isSelected();
+    });
+
+    deleteButton.click(() -> {
+      parent.delete(selected);
       setVisible(false);
+    });
+  }
+
+  private class ObjectRenderer extends JComponent {
+    @Override
+    protected void paintComponent(Graphics g) {
+      selected.render(Graphics3D.create(g), 0, 0);
     }
-  };
+
+    @Override
+    public Dimension getPreferredSize() {
+      if (selected == null) {
+        return super.getPreferredSize();
+      }
+      return selected.getRenderSize();
+    }
+  }
 
 }

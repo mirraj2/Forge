@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import com.google.common.collect.Lists;
 import forge.Forge;
 
 public class ImagePanel extends GPanel {
@@ -95,7 +96,7 @@ public class ImagePanel extends GPanel {
     @Override
     public void mouseReleased(MouseEvent e) {
       if (pressedObject == null) {
-        objectPanel.onSelection(selection);
+        parent.onSelection(selection);
       }
     };
 
@@ -105,7 +106,7 @@ public class ImagePanel extends GPanel {
     }
 
     private MapObject getObjectAt(int x, int y) {
-      for (MapObject o : parent.mapObjects) {
+      for (MapObject o : Lists.reverse(parent.mapObjects)) {
         if (o.bounds.contains(x, y)) {
           return o;
         }
