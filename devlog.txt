@@ -10,3 +10,19 @@ link objects to the action bar
 add objects to different layers of the map
 
 add view options for only showing certain layers and showing the grid, etc
+
+2/9/15
+
+key insights
+  - Each object is on its own layer and z-ordering can be changed with +/- or mousewheel
+  - when you draw an autotile, it becomes a new layer UNLESS your mouse drag started on an autotile
+    in which case it will append onto that existing autotile's layer
+    
+2/10/15
+
+add objects to the map, select them, move them, change z-order
+add autotiling
+add portals
+add tagging
+
+think about adding 'extensions' to allow for game-specific map editing

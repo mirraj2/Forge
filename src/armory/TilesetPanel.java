@@ -21,7 +21,7 @@ public class TilesetPanel extends GPanel {
   public final ObjectDetailsPanel objectPanel;
   public final ImagePanel imagePanel;
 
-  public final List<MapObject> mapObjects = Lists.newArrayList();
+  public final List<Sprite> mapObjects = Lists.newArrayList();
 
   public TilesetPanel(Armory armory, int id, String name, BufferedImage bi) {
     this.armory = armory;
@@ -41,7 +41,7 @@ public class TilesetPanel extends GPanel {
     TilesetPanel ret = new TilesetPanel(armory, json.getInt("id"), json.get("name"), bi);
 
     for (Json object : json.getJson("objects").asJsonArray()) {
-      MapObject o = MapObject.load(object, bi);
+      Sprite o = Sprite.load(object, bi);
       ret.mapObjects.add(o);
       armory.resourcesPanel.add(o);
     }
@@ -76,14 +76,14 @@ public class TilesetPanel extends GPanel {
   }
 
   public void onSelection(Rect selection) {
-    MapObject m = new MapObject(MapObject.idCounter++, bi, selection);
+    Sprite m = new Sprite(Sprite.idCounter++, bi, selection);
     mapObjects.add(m);
     imagePanel.selection = null;
     objectPanel.load(m);
     armory.resourcesPanel.add(m);
   }
 
-  public void delete(MapObject object) {
+  public void delete(Sprite object) {
     mapObjects.remove(object);
     imagePanel.selection = null;
     armory.resourcesPanel.remove(object);

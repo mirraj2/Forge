@@ -11,9 +11,11 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.JComponent;
 import armory.Armory;
-import armory.MapObject;
+import armory.Sprite;
+import com.google.common.collect.Lists;
 
 public class ToolPanel extends JComponent {
 
@@ -21,8 +23,10 @@ public class ToolPanel extends JComponent {
 
   private final Armory armory;
 
-  private MapObject[] tools = new MapObject[9];
+  private Sprite[] tools = new Sprite[9];
   private int toolIndex = 0;
+
+  private List<Runnable> listeners = Lists.newArrayList();
 
   public ToolPanel(Armory armory) {
     this.armory = armory;
@@ -31,10 +35,20 @@ public class ToolPanel extends JComponent {
   }
 
   public void setSelectedTool(int toolIndex) {
+    if (this.toolIndex == toolIndex) {
+      return;
+    }
     this.toolIndex = toolIndex;
+    for (Runnable r : listeners) {
+      r.run();
+    }
   }
 
-  public void equip(MapObject o) {
+  public Sprite getTool() {
+    return tools[toolIndex];
+  }
+
+  public void equip(Sprite o) {
     tools[toolIndex] = o;
   }
 
@@ -75,13 +89,13 @@ public class ToolPanel extends JComponent {
     toolIndex = Math.min(toolIndex, 8);
   }
 
-  private Rect getDrawBounds() {
-    double height = Math.min(getHeight(), 68);
+  public Rect getDrawBounds() {
+    double height = Math.min(getHeight(), 72);
     double idealWidth = height * 9 + 26;
     return new Rect((getWidth() - idealWidth) / 2, getHeight() - height, idealWidth, height);
   }
 
-  private void renderIcon(MapObject tool, Rect r, Graphics3D g) {
+  private void renderIcon(Sprite tool, Rect r, Graphics3D g) {
     BufferedImage bi = tool.subimage;
     if (tool.autotile) {
       g.draw(bi, r.x, r.y, r.maxX(), r.maxY(), 0, 32, 64, 96);
@@ -117,16 +131,20 @@ public class ToolPanel extends JComponent {
     }
 
     for (int i = 0; i < tools.length; i++) {
-      MapObject tool = tools[i];
+      Sprite tool = tools[i];
       if (tool == null) {
         continue;
       }
-      double size = Math.min(64, widthPerBox - 6);
+      double size = Math.min(64, widthPerBox - 10);
       Rect toolBounds = new Rect(r.x + i * widthPerBox + 4, r.y + 4, size, size);
       renderIcon(tool, toolBounds, g);
     }
 
     g.color(Color.lightGray).draw(new Rect(r.x + toolIndex * widthPerBox, r.y, widthPerBox, r.h).grow(-2, -2));
+  }
+
+  public void onChange(Runnable callback) {
+    listeners.add(callback);
   }
 
 }

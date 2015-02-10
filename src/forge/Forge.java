@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import net.miginfocom.swing.MigLayout;
 import armory.Armory;
 import forge.input.DragHandler;
 import forge.input.KeyboardHandler;
@@ -17,12 +18,16 @@ public class Forge extends GPanel {
 
   public static final int TILE_SIZE = 16;
 
+  public final Canvas canvas = new Canvas(this);
   public final Armory armory = new Armory(this);
   public final ToolPanel toolPanel = new ToolPanel(armory);
 
   public Forge() {
+    super(new MigLayout("insets 0, gap 0"));
+
     add(toolPanel, "pos 0% 90% 100% 100%");
     add(armory, "pos 5% 0% 95% 90%");
+    add(canvas, "width 100%, height 100%");
 
     setFocusable(true);
 

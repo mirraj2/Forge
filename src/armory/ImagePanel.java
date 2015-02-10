@@ -52,14 +52,14 @@ public class ImagePanel extends GPanel {
       g.line(x, 0, x, getHeight());
     }
     for (int y = Forge.TILE_SIZE; y < getHeight(); y += Forge.TILE_SIZE) {
-      g.line(0, y, getHeight(), y);
+      g.line(0, y, getWidth(), y);
     }
 
     if (selection != null) {
       g.color(SELECTION_COLOR).fill(selection);
       g.color(Color.white).draw(selection);
     }
-    for (MapObject o : parent.mapObjects) {
+    for (Sprite o : parent.mapObjects) {
       g.color(MAPPED_COLOR).fill(o.bounds);
       g.color(Color.white).draw(o.bounds);
     }
@@ -67,7 +67,7 @@ public class ImagePanel extends GPanel {
 
   private final MouseAdapter mouseListener = new MouseAdapter() {
     int pressX, pressY, mouseX, mouseY;
-    MapObject pressedObject;
+    Sprite pressedObject;
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -105,8 +105,8 @@ public class ImagePanel extends GPanel {
       selection = r.constrain(0, 0, bi.getWidth(), bi.getHeight());
     }
 
-    private MapObject getObjectAt(int x, int y) {
-      for (MapObject o : Lists.reverse(parent.mapObjects)) {
+    private Sprite getObjectAt(int x, int y) {
+      for (Sprite o : Lists.reverse(parent.mapObjects)) {
         if (o.bounds.contains(x, y)) {
           return o;
         }

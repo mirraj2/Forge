@@ -22,7 +22,7 @@ public class ObjectDetailsPanel extends GPanel {
   private final GTextField rowsInput = new GTextField().columns(3).focusSelects();
   private final GTextField colsInput = new GTextField().columns(3).focusSelects();
   private final GButton deleteButton = new GButton("Delete");
-  private MapObject selected = null;
+  private Sprite selected = null;
 
   public ObjectDetailsPanel(TilesetPanel parent) {
     this.parent = parent;
@@ -49,7 +49,7 @@ public class ObjectDetailsPanel extends GPanel {
     }
   }
 
-  public void load(MapObject o) {
+  public void load(Sprite o) {
     this.selected = o;
 
     Components.refresh(objectRenderer);

@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import com.google.common.collect.Lists;
 
-public class MapObject {
+public class Sprite {
 
   public static int idCounter = 0;
 
@@ -26,7 +26,7 @@ public class MapObject {
 
   private int offset = (int) (Math.random() * 10000); // make it so the animations don't look sync'd
 
-  public MapObject(int id, BufferedImage bi, Rect bounds) {
+  public Sprite(int id, BufferedImage bi, Rect bounds) {
     this.id = id;
     this.bi = bi;
     this.subimage = bi.getSubimage(bounds.x(), bounds.y(), bounds.w(), bounds.h());
@@ -61,11 +61,11 @@ public class MapObject {
     }
   }
 
-  public void render(Graphics3D g, int x, int y) {
+  public void render(Graphics3D g, double x, double y) {
     render(g, x, y, false);
   }
 
-  public void render(Graphics3D g, int x, int y, boolean freezeAnimation) {
+  public void render(Graphics3D g, double x, double y, boolean freezeAnimation) {
     if (isAnimated()) {
       long time = System.currentTimeMillis() + offset;
       int frameIndex = (int) ((time / (1000 / animationSpeed)) % animationFrames.size());
@@ -118,10 +118,10 @@ public class MapObject {
     return ret;
   }
 
-  public static MapObject load(Json json, BufferedImage bi) {
+  public static Sprite load(Json json, BufferedImage bi) {
     int id = json.getInt("id");
     idCounter = Math.max(idCounter, id + 1);
-    MapObject ret = new MapObject(id, bi, Rect.parse(json.get("bounds")));
+    Sprite ret = new Sprite(id, bi, Rect.parse(json.get("bounds")));
 
     ret.tags = json.get("tags");
     ret.autotile = json.getBoolean("autotile");

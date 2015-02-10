@@ -23,10 +23,10 @@ public class ResourcesPanel extends GPanel {
 
   private final Armory armory;
 
-  private List<MapObject> objects = Lists.newArrayList();
-  private final Map<MapObject, Rect> layout = Maps.newHashMap();
+  private List<Sprite> objects = Lists.newArrayList();
+  private final Map<Sprite, Rect> layout = Maps.newHashMap();
 
-  private MapObject hoverObject;
+  private Sprite hoverObject;
 
   public ResourcesPanel(Armory armory) {
     super(new MigLayout("insets 0, gap 0"));
@@ -44,8 +44,8 @@ public class ResourcesPanel extends GPanel {
     listen();
   }
 
-  public MapObject get(int id) {
-    for (MapObject o : objects) {
+  public Sprite get(int id) {
+    for (Sprite o : objects) {
       if (o.id == id) {
         return o;
       }
@@ -53,12 +53,12 @@ public class ResourcesPanel extends GPanel {
     return null;
   }
 
-  public void add(MapObject o) {
+  public void add(Sprite o) {
     objects.add(o);
     computeLayout();
   }
 
-  public void remove(MapObject o) {
+  public void remove(Sprite o) {
     objects.remove(o);
     computeLayout();
   }
@@ -71,7 +71,7 @@ public class ResourcesPanel extends GPanel {
     int x = 0;
     int y = 0;
     int rowHeight = 0;
-    for (MapObject o : objects) {
+    for (Sprite o : objects) {
       int w = o.getWidth();
       int h = o.getHeight();
 
@@ -94,8 +94,8 @@ public class ResourcesPanel extends GPanel {
     Components.refresh(view);
   }
 
-  private MapObject getObjectAt(int x, int y) {
-    for (Entry<MapObject, Rect> e : layout.entrySet()) {
+  private Sprite getObjectAt(int x, int y) {
+    for (Entry<Sprite, Rect> e : layout.entrySet()) {
       if (e.getValue().contains(x, y)) {
         return e.getKey();
       }
@@ -133,7 +133,7 @@ public class ResourcesPanel extends GPanel {
     @Override
     protected void paintComponent(Graphics gg) {
       Graphics3D g = Graphics3D.create(gg);
-      for (MapObject o : objects) {
+      for (Sprite o : objects) {
         Rect r = layout.get(o);
         g.alpha(hoverObject == null || o == hoverObject ? 1 : .5);
         o.render(g, r.x(), r.y(), hoverObject != null && o != hoverObject);
