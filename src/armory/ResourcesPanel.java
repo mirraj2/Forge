@@ -23,7 +23,7 @@ public class ResourcesPanel extends GPanel {
 
   private final Armory armory;
 
-  private List<Sprite> objects = Lists.newArrayList();
+  public List<Sprite> sprites = Lists.newArrayList();
   private final Map<Sprite, Rect> layout = Maps.newHashMap();
 
   private Sprite hoverObject;
@@ -45,7 +45,7 @@ public class ResourcesPanel extends GPanel {
   }
 
   public Sprite get(int id) {
-    for (Sprite o : objects) {
+    for (Sprite o : sprites) {
       if (o.id == id) {
         return o;
       }
@@ -54,12 +54,12 @@ public class ResourcesPanel extends GPanel {
   }
 
   public void add(Sprite o) {
-    objects.add(o);
+    sprites.add(o);
     computeLayout();
   }
 
   public void remove(Sprite o) {
-    objects.remove(o);
+    sprites.remove(o);
     computeLayout();
   }
 
@@ -71,7 +71,7 @@ public class ResourcesPanel extends GPanel {
     int x = 0;
     int y = 0;
     int rowHeight = 0;
-    for (Sprite o : objects) {
+    for (Sprite o : sprites) {
       int w = o.getWidth();
       int h = o.getHeight();
 
@@ -133,7 +133,7 @@ public class ResourcesPanel extends GPanel {
     @Override
     protected void paintComponent(Graphics gg) {
       Graphics3D g = Graphics3D.create(gg);
-      for (Sprite o : objects) {
+      for (Sprite o : sprites) {
         Rect r = layout.get(o);
         g.alpha(hoverObject == null || o == hoverObject ? 1 : .5);
         o.render(g, r.x(), r.y(), hoverObject != null && o != hoverObject);

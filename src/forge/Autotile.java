@@ -1,6 +1,7 @@
 package forge;
 
 import static forge.Forge.TILE_SIZE;
+import jasonlib.Json;
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
 import java.awt.Point;
@@ -12,10 +13,15 @@ public class Autotile extends MapObject {
   public TileGrid grid;
 
   public Autotile(Sprite sprite, int startX, int startY) {
+    this(sprite, new TileGrid());
+
+    addAutotile(startX, startY);
+  }
+
+  private Autotile(Sprite sprite, TileGrid grid) {
     super(sprite, null);
 
-    grid = new TileGrid();
-    addAutotile(startX, startY);
+    this.grid = grid;
   }
 
   @Override
@@ -28,7 +34,9 @@ public class Autotile extends MapObject {
   @Override
   public Rect getBounds() {
     Rect r = grid.bounds;
-    return new Rect(r.x * TILE_SIZE, r.y * TILE_SIZE, (r.w + 1) * TILE_SIZE, (r.h + 1) * TILE_SIZE);
+    r = new Rect(r.x * TILE_SIZE, r.y * TILE_SIZE, (r.w + 1) * TILE_SIZE, (r.h + 1) * TILE_SIZE);
+    r = r.grow(TILE_SIZE, TILE_SIZE);
+    return r;
   }
 
   @Override
@@ -64,6 +72,19 @@ public class Autotile extends MapObject {
 
   public void addAutotile(int i, int j) {
     grid.add(i, j);
+  }
+
+  @Override
+  public Json toJson() {
+    return Json.object()
+        .with("sprite", sprite.id)
+        .with("grid", grid.serialize());
+  }
+
+  public static Autotile load(Json json, Forge forge) {
+    Sprite sprite = forge.armory.getSprite(json.getInt("sprite"));
+    TileGrid grid = TileGrid.parse(json.get("grid"));
+    return new Autotile(sprite, grid);
   }
 
 }

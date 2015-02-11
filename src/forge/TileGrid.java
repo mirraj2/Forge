@@ -1,14 +1,36 @@
 package forge;
 
+import static com.google.common.base.Preconditions.checkState;
 import jasonlib.Rect;
+import java.nio.ByteBuffer;
+import java.util.Base64;
 
 public class TileGrid {
 
-  private int xOffset = 0;
-  private int[] yOffsets = new int[0];
-  private boolean[][] grid = new boolean[0][0];
+  private int xOffset;
+  private int[] yOffsets;
+  private boolean[][] grid;
 
   public Rect bounds = null;
+
+  public TileGrid() {
+    this(0, new int[0], new boolean[0][0]);
+  }
+
+  private TileGrid(int xOffset, int[] yOffsets, boolean[][] grid) {
+    this.xOffset = xOffset;
+    this.yOffsets = yOffsets;
+    this.grid = grid;
+
+    for (int i = 0; i < grid.length; i++) {
+      boolean[] col = grid[i];
+      if (col != null) {
+        for (int j = 0; j < col.length; j++) {
+          expandBounds(i + xOffset, j + yOffsets[i]);
+        }
+      }
+    }
+  }
 
   public void translate(int dx, int dy) {
     bounds = bounds.translate(dx, dy);
@@ -23,6 +45,10 @@ public class TileGrid {
 
     grid[i - xOffset][j - yOffsets[i - xOffset]] = true;
 
+    expandBounds(i, j);
+  }
+
+  private void expandBounds(int i, int j) {
     if (bounds == null) {
       bounds = new Rect(i, j, 0, 0);
     } else {
@@ -109,6 +135,68 @@ public class TileGrid {
 
     grid = newGrid;
     yOffsets = newYOffsets;
+  }
+
+  public String serialize() {
+    int bytesNeeded = 2 + 2 + yOffsets.length * 2; // offsets
+    for (int i = 0; i < grid.length; i++) {
+      boolean[] col = grid[i];
+      bytesNeeded += 2; // column height
+      bytesNeeded += col == null ? 0 : (grid[i].length + 7) / 8; // pack 8 booleans into a byte
+    }
+
+    // Log.debug("allocating buffer with %d bytes", bytesNeeded);
+
+    ByteBuffer b = ByteBuffer.allocate(bytesNeeded);
+
+    b.putShort((short) xOffset);
+    b.putShort((short) yOffsets.length);
+    for (int i = 0; i < grid.length; i++) {
+      b.putShort((short) yOffsets[i]);
+      boolean[] col = grid[i];
+      if (col == null) {
+        b.putShort((short) 0);
+        continue;
+      }
+      b.putShort((short) col.length);
+
+      for (int j = 0; j < col.length; j += 8) {
+        byte bits = 0;
+        for (int k = 0; k < 8 && j + k < col.length; k++) {
+          if (col[j + k]) {
+            bits |= 1 << k;
+          }
+        }
+        b.put(bits);
+      }
+    }
+
+    checkState(b.position() == bytesNeeded, "Expected buffer to have %d, but it had %d", bytesNeeded, b.position());
+
+    return Base64.getEncoder().encodeToString(b.array());
+  }
+
+  public static TileGrid parse(String s) {
+    ByteBuffer b = ByteBuffer.wrap(Base64.getDecoder().decode(s));
+
+    int xOffset = b.getShort();
+    int[] yOffsets = new int[b.getShort()];
+    boolean[][] grid = new boolean[yOffsets.length][];
+    for (int i = 0; i < yOffsets.length; i++) {
+      yOffsets[i] = b.getShort();
+      boolean[] col = new boolean[b.getShort()];
+      for (int j = 0; j < col.length; j += 8) {
+        byte bits = b.get();
+        for (int k = 0; k < 8 && j + k < col.length; k++) {
+          if ((bits & (1 << k)) > 0) {
+            col[j + k] = true;
+          }
+        }
+      }
+      grid[i] = col;
+    }
+
+    return new TileGrid(xOffset, yOffsets, grid);
   }
 
 }

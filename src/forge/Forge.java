@@ -18,8 +18,8 @@ public class Forge extends GPanel {
 
   public static final int TILE_SIZE = 16;
 
-  public final Canvas canvas = new Canvas(this);
   public final Armory armory = new Armory(this);
+  public final Canvas canvas = new Canvas(this);
   public final ToolPanel toolPanel = new ToolPanel(this);
 
   public Forge() {
@@ -45,6 +45,7 @@ public class Forge extends GPanel {
   private Runnable saveAndExit = () -> {
     armory.save();
     toolPanel.save();
+    canvas.data.save();
     System.exit(0);
   };
 

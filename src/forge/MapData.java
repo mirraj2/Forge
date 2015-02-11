@@ -1,5 +1,9 @@
 package forge;
 
+import jasonlib.IO;
+import jasonlib.Json;
+import jasonlib.OS;
+import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
 import armory.Sprite;
@@ -7,7 +11,13 @@ import com.google.common.collect.Lists;
 
 public class MapData {
 
+  private static final File file = new File(OS.getAppFolder("forge"), "map.json");
+
   public final List<MapObject> objects = Lists.newArrayList();
+
+  public MapData(Forge forge) {
+    load(forge);
+  }
 
   public void add(MapObject o) {
     if (objects.contains(o)) {
@@ -25,6 +35,17 @@ public class MapData {
     if (index == 0) {
       return; // already in the back
     }
+
+    // look for the first object that intersects this one
+    for (int i = index - 1; i >= 0; i--) {
+      if (o.intersects(objects.get(i))) {
+        objects.remove(index);
+        objects.add(i, o);
+        return;
+      }
+    }
+
+    // there is nothing behind this object, so we'll just move the z-index back by one
     objects.remove(index);
     objects.add(index - 1, o);
   }
@@ -34,6 +55,17 @@ public class MapData {
     if (index == objects.size() - 1) {
       return; // already in the front
     }
+
+    // look for the first object that intersects this one
+    for (int i = index + 1; i < objects.size(); i++) {
+      if (o.intersects(objects.get(i))) {
+        objects.remove(index);
+        objects.add(i, o);
+        return;
+      }
+    }
+
+    // there is nothing in front of this object, so we'll just move the z-index up by one
     objects.remove(index);
     objects.add(index + 1, o);
   }
@@ -56,6 +88,22 @@ public class MapData {
    */
   public MapObject getAutotile(int x, int y, Sprite sprite) {
     return getObjectAt(x, y, o -> o.sprite == sprite);
+  }
+
+  public void save() {
+    Json json = Json.object()
+        .with("objects", Json.array(objects, o -> o.toJson()));
+
+    IO.from(json).to(file);
+  }
+
+  private void load(Forge forge) {
+    if (file.exists()) {
+      Json json = IO.from(file).toJson();
+      for (Json o : json.getJson("objects").asJsonArray()) {
+        objects.add(MapObject.load(o, forge));
+      }
+    }
   }
 
 }

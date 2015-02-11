@@ -14,7 +14,7 @@ import forge.ToolPanel.Tool;
 public class Canvas extends GCanvas {
 
   public final Forge forge;
-  public final MapData data = new MapData();
+  public final MapData data;
 
   public int panX, panY;
 
@@ -25,6 +25,7 @@ public class Canvas extends GCanvas {
 
   public Canvas(Forge forge) {
     this.forge = forge;
+    this.data = new MapData(forge);
   }
 
   @Override

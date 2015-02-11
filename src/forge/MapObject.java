@@ -1,5 +1,6 @@
 package forge;
 
+import jasonlib.Json;
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
 import armory.Sprite;
@@ -13,6 +14,10 @@ public class MapObject {
   public MapObject(Sprite sprite, Rect location) {
     this.sprite = sprite;
     this.location = location;
+  }
+
+  public boolean intersects(MapObject o) {
+    return getBounds().intersects(o.getBounds());
   }
 
   public void moveTo(int x, int y) {
@@ -33,6 +38,20 @@ public class MapObject {
         sprite.render(g, i + location.x, j + location.y);
       }
     }
+  }
+
+  public Json toJson() {
+    return Json.object()
+        .with("sprite", sprite.id)
+        .with("loc", location.serialize());
+  }
+
+  public static MapObject load(Json json, Forge forge) {
+    if (json.has("grid")) {
+      return Autotile.load(json, forge);
+    }
+    Sprite sprite = forge.armory.getSprite(json.getInt("sprite"));
+    return new MapObject(sprite, Rect.parse(json.get("loc")));
   }
 
 }

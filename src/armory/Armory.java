@@ -37,6 +37,15 @@ public class Armory extends GPanel {
     load();
   }
 
+  public Sprite getSprite(int id){
+    for (Sprite sprite : resourcesPanel.sprites) {
+      if (sprite.id == id) {
+        return sprite;
+      }
+    }
+    return null;
+  }
+
   private void load() {
     Stopwatch watch = Stopwatch.createStarted();
 
@@ -79,7 +88,7 @@ public class Armory extends GPanel {
   }
 
   static {
-    dataDir = new File(OS.getAppFolder("forge"), "data");
+    dataDir = new File(OS.getAppFolder("forge"), "armory");
     tilesetListing = new File(dataDir, "tilesets.json");
     dataDir.mkdirs();
   }
