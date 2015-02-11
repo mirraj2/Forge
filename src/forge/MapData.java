@@ -20,6 +20,24 @@ public class MapData {
     objects.remove(o);
   }
 
+  public void moveBack(MapObject o) {
+    int index = objects.indexOf(o);
+    if (index == 0) {
+      return; // already in the back
+    }
+    objects.remove(index);
+    objects.add(index - 1, o);
+  }
+
+  public void moveForward(MapObject o) {
+    int index = objects.indexOf(o);
+    if (index == objects.size() - 1) {
+      return; // already in the front
+    }
+    objects.remove(index);
+    objects.add(index + 1, o);
+  }
+
   public MapObject getObjectAt(int x, int y) {
     return getObjectAt(x, y, o -> true);
   }

@@ -66,6 +66,14 @@ public class KeyboardHandler {
             canvas.data.remove(canvas.selectedObject);
             canvas.selectedObject = null;
           }
+        } else if (code == KeyEvent.VK_MINUS) {
+          if (canvas.selectedObject != null) {
+            canvas.data.moveBack(canvas.selectedObject);
+          }
+        } else if (code == KeyEvent.VK_EQUALS) {
+          if (canvas.selectedObject != null) {
+            canvas.data.moveForward(canvas.selectedObject);
+          }
         }
       }
     }
