@@ -6,6 +6,7 @@ import jasonlib.OS;
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -21,39 +22,45 @@ public class ToolPanel extends JComponent {
 
   private static final File file = new File(OS.getAppFolder("forge"), "tools.json");
 
+  private final Forge forge;
   private final Armory armory;
 
-  private Sprite[] tools = new Sprite[9];
-  private int toolIndex = 0;
+  public Tool tool;
+
+  private Sprite[] sprites = new Sprite[9];
+  private int spriteIndex = 0;
 
   private List<Runnable> listeners = Lists.newArrayList();
 
-  public ToolPanel(Armory armory) {
-    this.armory = armory;
+  public ToolPanel(Forge forge) {
+    this.forge = forge;
+    this.armory = forge.armory;
 
     load();
+
+    setTool(Tool.BRUSH);
   }
 
-  public void setSelectedTool(int toolIndex) {
-    if (this.toolIndex == toolIndex) {
+  public void setSelectedSprite(int spriteIndex) {
+    if (this.spriteIndex == spriteIndex) {
       return;
     }
-    this.toolIndex = toolIndex;
-    for (Runnable r : listeners) {
-      r.run();
-    }
+    this.spriteIndex = spriteIndex;
+    setTool(Tool.BRUSH);
+
+    notifyListeners();
   }
 
-  public Sprite getTool() {
-    return tools[toolIndex];
+  public Sprite getSprite() {
+    return sprites[spriteIndex];
   }
 
   public void equip(Sprite o) {
-    tools[toolIndex] = o;
+    sprites[spriteIndex] = o;
   }
 
   public void save() {
-    Json json = Json.array(Arrays.asList(tools), tool -> tool == null ? -1 : tool.id);
+    Json json = Json.array(Arrays.asList(sprites), tool -> tool == null ? -1 : tool.id);
     IO.from(json).to(file);
   }
 
@@ -62,7 +69,7 @@ public class ToolPanel extends JComponent {
       int index = 0;
       for (int id : IO.from(file).toJson().asIntArray()) {
         if (id >= 0) {
-          tools[index] = armory.resourcesPanel.get(id);
+          sprites[index] = armory.resourcesPanel.get(id);
         }
         index++;
       }
@@ -73,7 +80,7 @@ public class ToolPanel extends JComponent {
     Rect r = getDrawBounds();
     if (r.contains(e.getX(), e.getY())) {
       e.consume();
-      toolIndex = (int) ((e.getX() - r.x) / (r.w / 9));
+      setSelectedSprite((int) ((e.getX() - r.x) / (r.w / 9)));
 
       if (e.getClickCount() == 2) {
         armory.tabs.setSelectedIndex(0);
@@ -84,9 +91,9 @@ public class ToolPanel extends JComponent {
 
   public void mouseDragged(MouseEvent e) {
     Rect r = getDrawBounds();
-    toolIndex = (int) ((e.getX() - r.x) / (r.w / 9));
-    toolIndex = Math.max(toolIndex, 0);
-    toolIndex = Math.min(toolIndex, 8);
+    spriteIndex = (int) ((e.getX() - r.x) / (r.w / 9));
+    spriteIndex = Math.max(spriteIndex, 0);
+    spriteIndex = Math.min(spriteIndex, 8);
   }
 
   public Rect getDrawBounds() {
@@ -96,7 +103,7 @@ public class ToolPanel extends JComponent {
   }
 
   private void renderIcon(Sprite tool, Rect r, Graphics3D g) {
-    BufferedImage bi = tool.subimage;
+    BufferedImage bi = tool.getFrame();
     if (tool.autotile) {
       g.draw(bi, r.x, r.y, r.maxX(), r.maxY(), 0, 32, 64, 96);
     } else {
@@ -130,8 +137,8 @@ public class ToolPanel extends JComponent {
       g.line(x, r.y + 4, x, getHeight());
     }
 
-    for (int i = 0; i < tools.length; i++) {
-      Sprite tool = tools[i];
+    for (int i = 0; i < sprites.length; i++) {
+      Sprite tool = sprites[i];
       if (tool == null) {
         continue;
       }
@@ -140,11 +147,37 @@ public class ToolPanel extends JComponent {
       renderIcon(tool, toolBounds, g);
     }
 
-    g.color(Color.lightGray).draw(new Rect(r.x + toolIndex * widthPerBox, r.y, widthPerBox, r.h).grow(-2, -2));
+    g.color(Color.lightGray).draw(new Rect(r.x + spriteIndex * widthPerBox, r.y, widthPerBox, r.h).grow(-2, -2));
   }
 
   public void onChange(Runnable callback) {
     listeners.add(callback);
+  }
+
+  public void switchTool() {
+    Tool[] values = Tool.values();
+    setTool(values[(tool.ordinal() + 1) % values.length]);
+  }
+
+  public void setTool(Tool tool) {
+    this.tool = tool;
+    forge.canvas.setCursor(Cursor.getPredefinedCursor(tool.cursor));
+    notifyListeners();
+  }
+
+  private void notifyListeners() {
+    for (Runnable r : listeners) {
+      r.run();
+    }
+  }
+
+  public static enum Tool {
+    CURSOR(Cursor.DEFAULT_CURSOR), BRUSH(Cursor.HAND_CURSOR);
+
+    public final int cursor;
+    private Tool(int cursor) {
+      this.cursor = cursor;
+    }
   }
 
 }

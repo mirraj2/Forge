@@ -67,14 +67,7 @@ public class Sprite {
 
   public void render(Graphics3D g, double x, double y, boolean freezeAnimation) {
     if (isAnimated()) {
-      long time = System.currentTimeMillis() + offset;
-      int frameIndex = (int) ((time / (1000 / animationSpeed)) % animationFrames.size());
-
-      if (freezeAnimation) {
-        frameIndex = 0;
-      }
-
-      BufferedImage frame = animationFrames.get(frameIndex);
+      BufferedImage frame = freezeAnimation ? animationFrames.get(0) : getFrame();
       g.draw(frame, x, y);
     } else {
       g.draw(subimage, x, y);
@@ -87,6 +80,17 @@ public class Sprite {
       return new Dimension(frame.getWidth(), frame.getHeight());
     }
     return new Dimension(bounds.w(), bounds.h());
+  }
+
+  public BufferedImage getFrame() {
+    if (isAnimated()) {
+      long time = System.currentTimeMillis() + offset;
+      int frameIndex = (int) ((time / (1000 / animationSpeed)) % animationFrames.size());
+
+      return animationFrames.get(frameIndex);
+    } else {
+      return subimage;
+    }
   }
 
   public int getWidth() {

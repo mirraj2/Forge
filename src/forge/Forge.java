@@ -20,7 +20,7 @@ public class Forge extends GPanel {
 
   public final Canvas canvas = new Canvas(this);
   public final Armory armory = new Armory(this);
-  public final ToolPanel toolPanel = new ToolPanel(armory);
+  public final ToolPanel toolPanel = new ToolPanel(this);
 
   public Forge() {
     super(new MigLayout("insets 0, gap 0"));
