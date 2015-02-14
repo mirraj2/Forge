@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import com.google.common.collect.Lists;
-import forge.Forge;
+import forge.ui.Forge;
 
 public class ImagePanel extends GPanel {
 

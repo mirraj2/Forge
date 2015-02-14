@@ -1,13 +1,16 @@
-package forge;
+package forge.map;
 
+import static java.util.stream.Collectors.toList;
 import jasonlib.IO;
 import jasonlib.Json;
 import jasonlib.OS;
+import jasonlib.Rect;
 import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
 import armory.Sprite;
 import com.google.common.collect.Lists;
+import forge.ui.Forge;
 
 public class MapData {
 
@@ -20,14 +23,32 @@ public class MapData {
   }
 
   public void add(MapObject o) {
-    if (objects.contains(o)) {
-      return;
-    }
     objects.add(o);
   }
 
   public void remove(MapObject o) {
     objects.remove(o);
+  }
+
+  public void remove(int objectId) {
+    objects.remove(getIndex(objectId));
+  }
+
+  public void replace(int objectId, MapObject replacement) {
+    int index = getIndex(objectId);
+    if (index == -1) {
+      throw new RuntimeException("Could not find object of id: " + objectId);
+    }
+    objects.set(index, replacement);
+  }
+
+  private int getIndex(int objectId) {
+    for (int i = 0; i < objects.size(); i++) {
+      if (objects.get(i).id == objectId) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public void moveBack(MapObject o) {
@@ -70,13 +91,19 @@ public class MapData {
     objects.add(index + 1, o);
   }
 
+  public List<MapObject> getObjects(Rect region) {
+    return objects.stream()
+        .filter(o -> o.getBounds().intersects(region))
+        .collect(toList());
+  }
+
   public MapObject getObjectAt(int x, int y) {
     return getObjectAt(x, y, o -> true);
   }
 
   public MapObject getObjectAt(int x, int y, Predicate<MapObject> filter) {
     for (MapObject o : Lists.reverse(objects)) {
-      if (o.isHit(x, y)) {
+      if (filter.test(o) && o.isHit(x, y)) {
         return o;
       }
     }

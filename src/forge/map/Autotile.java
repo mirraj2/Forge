@@ -1,16 +1,23 @@
-package forge;
+package forge.map;
 
-import static forge.Forge.TILE_SIZE;
+import static forge.ui.Forge.TILE_SIZE;
 import jasonlib.Json;
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
+import java.awt.Color;
 import java.awt.Point;
+import java.util.List;
+import java.util.function.BiConsumer;
 import armory.Sprite;
+import com.google.common.collect.ImmutableList;
 import forge.input.MouseHandler;
+import forge.ui.Forge;
 
 public class Autotile extends MapObject {
 
   public TileGrid grid;
+  private final boolean isCliff;
+  private int cliffHeight = 0;
 
   public Autotile(Sprite sprite, int startX, int startY) {
     this(sprite, new TileGrid());
@@ -22,6 +29,8 @@ public class Autotile extends MapObject {
     super(sprite, null);
 
     this.grid = grid;
+
+    isCliff = sprite.getHeight() > 96;
   }
 
   @Override
@@ -62,7 +71,7 @@ public class Autotile extends MapObject {
       for (double y = clip.y; y < clip.maxY(); y += TILE_SIZE) {
         int i = (int) x / TILE_SIZE;
         int j = (int) y / TILE_SIZE;
-        Point p = Autotiles.getAutotileDetails(i, j, grid);
+        Point p = Autotiles.compute(i, j, grid, cliffHeight);
         if (p != Autotiles.EMPTY) {
           g.draw(sprite.getFrame(), x, y, p.x, p.y, 16, 16);
         }
@@ -73,6 +82,25 @@ public class Autotile extends MapObject {
   public void addAutotile(int i, int j) {
     grid.add(i, j);
   }
+
+  @Override
+  public List<ObjectHandle> getHandles() {
+    if (isCliff) {
+      Rect r = getBounds();
+      int size = 10;
+      ObjectHandle handle = new ObjectHandle().color(Color.green)
+          .loc(new Rect(r.centerX() - size / 2, r.maxY() + 20 + cliffHeight * Forge.TILE_SIZE, size, size))
+          .onDrag(onDrag);
+      return ImmutableList.of(handle);
+    }
+    return super.getHandles();
+  }
+
+  private final BiConsumer<Integer, Integer> onDrag = (x, y) -> {
+    Rect r = getBounds();
+    cliffHeight = (int) ((y - (r.maxY() + 20)) / Forge.TILE_SIZE);
+    cliffHeight = Math.max(cliffHeight, 0);
+  };
 
   @Override
   public Json toJson() {

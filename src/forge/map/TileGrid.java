@@ -1,4 +1,4 @@
-package forge;
+package forge.map;
 
 import static com.google.common.base.Preconditions.checkState;
 import jasonlib.Rect;

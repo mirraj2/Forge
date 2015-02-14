@@ -1,15 +1,21 @@
-package forge;
+package forge.map;
 
 import jasonlib.Json;
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
+import java.util.List;
 import armory.Sprite;
+import com.google.common.collect.ImmutableList;
+import forge.ui.Forge;
 
 public class MapObject {
 
-  public final Sprite sprite;
+  private static int idCounter = 0;
 
-  public Rect location; // for regular map objects
+  public int id = idCounter++; // not serialized, used by Undo
+
+  public final Sprite sprite;
+  public Rect location; // autotiles don't use this
 
   public MapObject(Sprite sprite, Rect location) {
     this.sprite = sprite;
@@ -44,6 +50,10 @@ public class MapObject {
     return Json.object()
         .with("sprite", sprite.id)
         .with("loc", location.serialize());
+  }
+
+  public List<ObjectHandle> getHandles(){
+    return ImmutableList.of();
   }
 
   public static MapObject load(Json json, Forge forge) {

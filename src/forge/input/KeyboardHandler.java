@@ -7,8 +7,9 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.swing.text.JTextComponent;
-import forge.Canvas;
-import forge.Forge;
+import forge.map.MapObject;
+import forge.ui.Canvas;
+import forge.ui.Forge;
 
 public class KeyboardHandler {
 
@@ -46,6 +47,8 @@ public class KeyboardHandler {
 
       if (code == KeyEvent.VK_ESCAPE) {
         forge.armory.setVisible(!forge.armory.isVisible());
+      } else if (code == KeyEvent.VK_F1) {
+        Forge.enableAnimations = !Forge.enableAnimations;
       }
 
       if (GFocus.currentFocusOwner instanceof JTextComponent) {
@@ -62,17 +65,23 @@ public class KeyboardHandler {
         } else if (code == KeyEvent.VK_G) {
           canvas.showGrid = !canvas.showGrid;
         } else if (code == KeyEvent.VK_BACK_SPACE) {
-          if (canvas.selectedObject != null) {
-            canvas.data.remove(canvas.selectedObject);
-            canvas.selectedObject = null;
+          for (MapObject o : canvas.selectedObjects) {
+            canvas.data.remove(o);
           }
+          canvas.selectedObjects.clear();
         } else if (code == KeyEvent.VK_MINUS) {
-          if (canvas.selectedObject != null) {
-            canvas.data.moveBack(canvas.selectedObject);
+          for (MapObject o : canvas.selectedObjects) {
+            canvas.data.moveBack(o);
           }
         } else if (code == KeyEvent.VK_EQUALS) {
-          if (canvas.selectedObject != null) {
-            canvas.data.moveForward(canvas.selectedObject);
+          for (MapObject o : canvas.selectedObjects) {
+            canvas.data.moveForward(o);
+          }
+        } else {
+          if (GKeyboard.isSystemShortcut(e.getModifiers())) {
+            if (code == KeyEvent.VK_Z) {
+              forge.undo.undo();
+            }
           }
         }
       }

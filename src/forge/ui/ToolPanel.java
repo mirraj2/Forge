@@ -1,4 +1,4 @@
-package forge;
+package forge.ui;
 
 import jasonlib.IO;
 import jasonlib.Json;
@@ -38,13 +38,10 @@ public class ToolPanel extends JComponent {
 
     load();
 
-    setTool(Tool.BRUSH);
+    setTool(Tool.CURSOR);
   }
 
   public void setSelectedSprite(int spriteIndex) {
-    if (this.spriteIndex == spriteIndex) {
-      return;
-    }
     this.spriteIndex = spriteIndex;
     setTool(Tool.BRUSH);
 
@@ -82,9 +79,13 @@ public class ToolPanel extends JComponent {
       e.consume();
       setSelectedSprite((int) ((e.getX() - r.x) / (r.w / 9)));
 
-      if (e.getClickCount() == 2) {
-        armory.tabs.setSelectedIndex(0);
-        armory.setVisible(true);
+      if (e.getButton() == MouseEvent.BUTTON1) {
+        if (e.getClickCount() == 2) {
+          armory.tabs.setSelectedIndex(0);
+          armory.setVisible(true);
+        }
+      } else if (e.getButton() == MouseEvent.BUTTON3) {
+        equip(null);
       }
     }
   }
@@ -175,6 +176,7 @@ public class ToolPanel extends JComponent {
     CURSOR(Cursor.DEFAULT_CURSOR), BRUSH(Cursor.HAND_CURSOR);
 
     public final int cursor;
+
     private Tool(int cursor) {
       this.cursor = cursor;
     }

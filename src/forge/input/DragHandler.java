@@ -7,7 +7,7 @@ import jasonlib.swing.global.DND;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Collection;
-import forge.Forge;
+import forge.ui.Forge;
 
 public class DragHandler {
 

@@ -1,4 +1,4 @@
-package forge;
+package forge.ui;
 
 import jasonlib.swing.component.GFrame;
 import jasonlib.swing.component.GPanel;
@@ -10,17 +10,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import net.miginfocom.swing.MigLayout;
 import armory.Armory;
+import forge.Undo;
 import forge.input.DragHandler;
 import forge.input.KeyboardHandler;
 import forge.input.MouseHandler;
 
 public class Forge extends GPanel {
 
+  public static boolean enableAnimations = true;
   public static final int TILE_SIZE = 16;
 
   public final Armory armory = new Armory(this);
   public final Canvas canvas = new Canvas(this);
   public final ToolPanel toolPanel = new ToolPanel(this);
+  public final Undo undo = new Undo(this);
 
   public Forge() {
     super(new MigLayout("insets 0, gap 0"));

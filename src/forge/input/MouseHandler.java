@@ -1,17 +1,18 @@
 package forge.input;
 
-import static forge.Forge.TILE_SIZE;
+import static forge.ui.Forge.TILE_SIZE;
 import jasonlib.Rect;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 import armory.Sprite;
-import forge.Autotile;
-import forge.Canvas;
-import forge.Forge;
-import forge.MapObject;
-import forge.ToolPanel;
-import forge.ToolPanel.Tool;
+import forge.map.Autotile;
+import forge.map.MapObject;
+import forge.map.ObjectHandle;
+import forge.ui.Canvas;
+import forge.ui.Forge;
+import forge.ui.ToolPanel;
+import forge.ui.ToolPanel.Tool;
 
 public class MouseHandler {
 
@@ -19,11 +20,13 @@ public class MouseHandler {
   private final ToolPanel toolPanel;
   private final Canvas canvas;
 
-  private int mouseX, mouseY;
+  private int pressX, pressY, mouseX, mouseY;
   private int offsetX, offsetY;
   private boolean mouseInside;
 
   private Rect startingLoc;
+
+  private ObjectHandle clickedHandle;
 
   public MouseHandler(Forge forge) {
     this.forge = forge;
@@ -34,29 +37,40 @@ public class MouseHandler {
   }
 
   private void mousePress() {
+    MapObject selected;
     if (toolPanel.tool == Tool.BRUSH) {
       if (canvas.hoverLoc != null) {
         Sprite sprite = toolPanel.getSprite();
         if (sprite.autotile) {
           int x = canvas.hoverLoc.x(), y = canvas.hoverLoc.y();
-          canvas.selectedObject = canvas.data.getAutotile(x, y, sprite);
-          if (canvas.selectedObject == null) {
-            canvas.selectedObject = new Autotile(sprite, x / TILE_SIZE, y / TILE_SIZE);
+          selected = canvas.data.getAutotile(x, y, sprite);
+          if (selected == null) {
+            selected = new Autotile(sprite, x / TILE_SIZE, y / TILE_SIZE);
           }
           canvas.hoverLoc = null;
         } else {
           startingLoc = canvas.hoverLoc;
           canvas.hoverLoc = null;
-          canvas.selectedObject = new MapObject(sprite, startingLoc);
+          selected = new MapObject(sprite, startingLoc);
         }
-        canvas.data.add(canvas.selectedObject);
+        if (canvas.data.objects.contains(selected)) {
+          forge.undo.onModify(selected);
+        } else {
+          canvas.data.add(selected);
+          forge.undo.onCreate(selected);
+        }
+        canvas.select(selected);
       }
     } else if (toolPanel.tool == Tool.CURSOR) {
-      canvas.selectedObject = canvas.data.getObjectAt(mouseX, mouseY);
-      if (canvas.selectedObject != null) {
-        Rect bounds = canvas.selectedObject.getBounds();
-        offsetX = mouseX - bounds.x();
-        offsetY = mouseY - bounds.y();
+      clickedHandle = getHandleAt(mouseX, mouseY);
+      if (clickedHandle == null) {
+        selected = canvas.data.getObjectAt(mouseX, mouseY);
+        canvas.select(selected);
+        if (selected != null) {
+          Rect bounds = selected.getBounds();
+          offsetX = mouseX - bounds.x();
+          offsetY = mouseY - bounds.y();
+        }
       }
     }
   }
@@ -70,11 +84,10 @@ public class MouseHandler {
   }
 
   private void mouseDrag() {
-    MapObject selected = canvas.selectedObject;
     if (toolPanel.tool == Tool.BRUSH) {
-      if (selected != null) {
-        if (selected instanceof Autotile) {
-          ((Autotile) selected).addAutotile(mouseX / TILE_SIZE, mouseY / TILE_SIZE);
+      for (MapObject o : canvas.selectedObjects) {
+        if (o instanceof Autotile) {
+          ((Autotile) o).addAutotile(mouseX / TILE_SIZE, mouseY / TILE_SIZE);
         } else {
           Rect r = startingLoc;
           double x1 = r.x, y1 = r.y, x2 = r.maxX(), y2 = r.maxY();
@@ -90,12 +103,22 @@ public class MouseHandler {
           while (mouseY > y2) {
             y2 += r.h;
           }
-          selected.location = new Rect(x1, y1, x2 - x1, y2 - y1);
+          o.location = new Rect(x1, y1, x2 - x1, y2 - y1);
         }
       }
     } else if (toolPanel.tool == Tool.CURSOR) {
-      if (selected != null) {
-        selected.moveTo(round(mouseX - offsetX), round(mouseY - offsetY));
+      if (canvas.selectedObjects.isEmpty() || canvas.selectionBox != null) {
+        canvas.selectionBox = Rect.create(pressX, pressY, mouseX, mouseY);
+        canvas.selectedObjects.clear();
+        canvas.selectedObjects.addAll(canvas.data.getObjects(canvas.selectionBox));
+      } else {
+        if (clickedHandle == null) {
+          for (MapObject o : canvas.selectedObjects) {
+            o.moveTo(round(mouseX - offsetX), round(mouseY - offsetY));
+          }
+        } else {
+          clickedHandle.drag(mouseX, mouseY);
+        }
       }
     }
   }
@@ -114,6 +137,17 @@ public class MouseHandler {
         }
       }
     }
+  }
+
+  private ObjectHandle getHandleAt(int x, int y) {
+    for (MapObject o : canvas.selectedObjects) {
+      for (ObjectHandle h : o.getHandles()) {
+        if (h.location.contains(x, y)) {
+          return h;
+        }
+      }
+    }
+    return null;
   }
 
   public static int round(int n) {
@@ -136,8 +170,8 @@ public class MouseHandler {
         return;
       }
 
-      mouseX = e.getX() + canvas.panX;
-      mouseY = e.getY() + canvas.panY;
+      mouseX = pressX = e.getX() + canvas.panX;
+      mouseY = pressY = e.getY() + canvas.panY;
       mousePress();
     };
 
@@ -170,8 +204,8 @@ public class MouseHandler {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      // canvas.selectedObject = null;
       startingLoc = null;
+      canvas.selectionBox = null;
     };
 
     @Override

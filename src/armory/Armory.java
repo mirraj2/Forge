@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.swing.JTabbedPane;
 import com.google.common.base.Stopwatch;
-import forge.Forge;
+import forge.ui.Forge;
 
 /**
  * Resource management

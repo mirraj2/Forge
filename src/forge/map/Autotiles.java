@@ -1,15 +1,58 @@
-package forge;
+package forge.map;
 
 import java.awt.Point;
 
 public class Autotiles {
 
   public static Point EMPTY = new Point(-2, -2);
-  public static Point NO_CHANGE = new Point(32, 64);
+  public static Point CENTER = new Point(32, 64);
 
-  public static Point getAutotileDetails(int i, int j, TileGrid grid) {
+  public static Point compute(int i, int j, TileGrid grid, int cliffHeight) {
+    Point p = getNormalAutotile(i, j, grid);
+
+    if (p == EMPTY) {
+      p = getCliffAutotile(i, j, grid, cliffHeight);
+    }
+
+    return p;
+  }
+
+  public static Point getCliffAutotile(int i, int j, TileGrid grid, int cliffHeight) {
+    if (cliffHeight == 0) {
+      return EMPTY;
+    }
+
+    Point above = null;
+    int k; // how far up we found the cliff ledge
+    for (k = 0; k < cliffHeight; k++) {
+      above = getNormalAutotile(i, j - k - 1, grid);
+      if (above != EMPTY) {
+        if (above.y != 80) {
+          return EMPTY;
+        }
+        break;
+      }
+    }
+
+    if (above == EMPTY) {
+      return EMPTY;
+    }
+
+    if (k == cliffHeight - 1) {
+      // this is at the base
+      return new Point(i % 2 == 0 ? 16 : 32, 144);
+    } else if (k == 0) {
+      // this is right below the ledge
+      return new Point(i % 2 == 0 ? 16 : 32, 96);
+    } else {
+      return new Point(i % 2 == 0 ? 16 : 32, k % 2 == 1 ? 112 : 128);
+    }
+  }
+
+  public static Point getNormalAutotile(int i, int j, TileGrid grid) {
     if (grid.get(i, j)) {
-      return NO_CHANGE;
+      return new Point(i % 2 == 0 ? 16 : 32, j % 2 == 0 ? 48 : 64);
+      // return CENTER;
     }
 
     boolean north = grid.get(i, j - 1);
@@ -79,9 +122,9 @@ public class Autotiles {
       } else if (southwest) {
         return new Point(16, 0);
       } else if (northwest) {
-        return new Point(16, 16);
+        return new Point(48, 80);
       } else if (northeast) {
-        return new Point(0, 16);
+        return new Point(0, 80);
       }
     }
 
@@ -111,7 +154,7 @@ public class Autotiles {
       return new Point(48, 48);
     }
 
-    return NO_CHANGE;
+    return CENTER;
   }
 
 }

@@ -31,9 +31,17 @@ think about adding 'extensions' to allow for game-specific map editing
 
 add auto-persistence of the objects
 make z-ordering smart -- move the object past the first object which intersects with the selected one
+try to actually make a map -- see what's missing
+  -undo
 add portals
 add tagging
 
 think about how NPCs should be added, or if that should just be done with tagging
 
 also, think about a way to get amazing art like the two pieces on your desktop into the game CINEMATIC ART!
+
+2/13/15
+
+try to make a map
+  -autotiling of other things besides flat terrain
+    -cliff sides

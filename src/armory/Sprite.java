@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import com.google.common.collect.Lists;
+import forge.ui.Forge;
 
 public class Sprite {
 
@@ -67,6 +68,9 @@ public class Sprite {
 
   public void render(Graphics3D g, double x, double y, boolean freezeAnimation) {
     if (isAnimated()) {
+      if (!Forge.enableAnimations) {
+        freezeAnimation = true;
+      }
       BufferedImage frame = freezeAnimation ? animationFrames.get(0) : getFrame();
       g.draw(frame, x, y);
     } else {
@@ -86,7 +90,9 @@ public class Sprite {
     if (isAnimated()) {
       long time = System.currentTimeMillis() + offset;
       int frameIndex = (int) ((time / (1000 / animationSpeed)) % animationFrames.size());
-
+      if (!Forge.enableAnimations) {
+        frameIndex = 0;
+      }
       return animationFrames.get(frameIndex);
     } else {
       return subimage;
