@@ -12,7 +12,6 @@ import armory.ImagePanel;
 import armory.Sprite;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
-import forge.map.Autotile;
 import forge.map.MapData;
 import forge.map.MapObject;
 import forge.map.ObjectHandle;
@@ -57,9 +56,9 @@ public class Canvas extends GCanvas {
     g.translate(-panX, -panY);
 
     for (MapObject o : data.objects) {
-      if (hoverObject instanceof Autotile) {
-        g.alpha(o == hoverObject ? 1 : .6);
-      }
+      // if (hoverObject instanceof Autotile) {
+      // g.alpha(o == hoverObject ? 1 : .6);
+      // }
       o.render(g, clip);
 
       if (forge.toolPanel.tool == Tool.CURSOR) {

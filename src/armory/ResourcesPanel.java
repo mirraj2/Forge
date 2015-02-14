@@ -135,7 +135,7 @@ public class ResourcesPanel extends GPanel {
       Graphics3D g = Graphics3D.create(gg);
       for (Sprite o : sprites) {
         Rect r = layout.get(o);
-        g.alpha(hoverObject == null || o == hoverObject ? 1 : .5);
+        // g.alpha(hoverObject == null || o == hoverObject ? 1 : .5);
         o.render(g, r.x(), r.y(), hoverObject != null && o != hoverObject);
       }
     };

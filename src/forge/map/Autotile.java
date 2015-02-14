@@ -104,15 +104,23 @@ public class Autotile extends MapObject {
 
   @Override
   public Json toJson() {
-    return Json.object()
+    Json ret = Json.object()
         .with("sprite", sprite.id)
         .with("grid", grid.serialize());
+    if (cliffHeight > 0) {
+      ret.with("cliff_height", cliffHeight);
+    }
+    return ret;
   }
 
   public static Autotile load(Json json, Forge forge) {
     Sprite sprite = forge.armory.getSprite(json.getInt("sprite"));
     TileGrid grid = TileGrid.parse(json.get("grid"));
-    return new Autotile(sprite, grid);
+    Autotile ret = new Autotile(sprite, grid);
+    if (json.has("cliff_height")) {
+      ret.cliffHeight = json.getInt("cliff_height");
+    }
+    return ret;
   }
 
 }

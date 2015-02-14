@@ -54,6 +54,7 @@ public class ToolPanel extends JComponent {
 
   public void equip(Sprite o) {
     sprites[spriteIndex] = o;
+    setTool(Tool.BRUSH);
   }
 
   public void save() {

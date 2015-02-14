@@ -45,3 +45,5 @@ also, think about a way to get amazing art like the two pieces on your desktop i
 try to make a map
   -autotiling of other things besides flat terrain
     -cliff sides
+    
+make moving an object be something that is undo-able

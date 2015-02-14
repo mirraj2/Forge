@@ -2,6 +2,8 @@ package forge.input;
 
 import static forge.ui.Forge.TILE_SIZE;
 import jasonlib.Rect;
+import jasonlib.swing.global.GKeyboard;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
@@ -87,7 +89,15 @@ public class MouseHandler {
     if (toolPanel.tool == Tool.BRUSH) {
       for (MapObject o : canvas.selectedObjects) {
         if (o instanceof Autotile) {
-          ((Autotile) o).addAutotile(mouseX / TILE_SIZE, mouseY / TILE_SIZE);
+          int radius = 0;
+          if (GKeyboard.isKeyDown(KeyEvent.VK_SHIFT)) { // big brush size
+            radius = 3;
+          }
+          for (int i = -radius; i <= radius; i++) {
+            for (int j = -radius; j <= radius; j++) {
+              ((Autotile) o).addAutotile(mouseX / TILE_SIZE + i, mouseY / TILE_SIZE + j);
+            }
+          }
         } else {
           Rect r = startingLoc;
           double x1 = r.x, y1 = r.y, x2 = r.maxX(), y2 = r.maxY();
