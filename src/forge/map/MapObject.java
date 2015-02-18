@@ -4,9 +4,9 @@ import jasonlib.Json;
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
 import java.util.List;
-import armory.Sprite;
+import armory.Armory;
+import armory.rez.Resource;
 import com.google.common.collect.ImmutableList;
-import forge.ui.Forge;
 
 public class MapObject {
 
@@ -14,11 +14,11 @@ public class MapObject {
 
   public int id = idCounter++; // not serialized, used by Undo
 
-  public final Sprite sprite;
+  public final Resource rez;
   public Rect location; // autotiles don't use this
 
-  public MapObject(Sprite sprite, Rect location) {
-    this.sprite = sprite;
+  public MapObject(Resource rez, Rect location) {
+    this.rez = rez;
     this.location = location;
   }
 
@@ -39,16 +39,16 @@ public class MapObject {
   }
 
   public void render(Graphics3D g, Rect clip) {
-    for (int i = 0; i < location.w; i += sprite.getWidth()) {
-      for (int j = 0; j < location.h; j += sprite.getHeight()) {
-        sprite.render(g, i + location.x, j + location.y);
+    for (int i = 0; i < location.w; i += rez.getWidth()) {
+      for (int j = 0; j < location.h; j += rez.getHeight()) {
+        rez.render(g, i + location.x, j + location.y);
       }
     }
   }
 
   public Json toJson() {
     return Json.object()
-        .with("sprite", sprite.id)
+        .with("sprite", rez.getId())
         .with("loc", location.serialize());
   }
 
@@ -56,12 +56,10 @@ public class MapObject {
     return ImmutableList.of();
   }
 
-  public static MapObject load(Json json, Forge forge) {
-    if (json.has("grid")) {
-      return Autotile.load(json, forge);
-    }
-    Sprite sprite = forge.armory.getSprite(json.getInt("sprite"));
-    return new MapObject(sprite, Rect.parse(json.get("loc")));
+
+  public static MapObject load(Json json, Armory armory) {
+    Resource rez = armory.getResource(json.getInt("sprite"));
+    return rez.loadObject(json);
   }
 
 }

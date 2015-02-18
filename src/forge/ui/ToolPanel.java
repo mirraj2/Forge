@@ -9,26 +9,26 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JComponent;
 import armory.Armory;
-import armory.Sprite;
+import armory.rez.Resource;
 import com.google.common.collect.Lists;
 
 public class ToolPanel extends JComponent {
 
   private static final File file = new File(OS.getAppFolder("forge"), "tools.json");
+  private static final int NULL_ID = -9;
 
   private final Forge forge;
   private final Armory armory;
 
   public Tool tool;
 
-  private Sprite[] sprites = new Sprite[9];
-  private int spriteIndex = 0;
+  private Resource[] resources = new Resource[9];
+  private int resourceIndex = 0;
 
   private List<Runnable> listeners = Lists.newArrayList();
 
@@ -41,24 +41,24 @@ public class ToolPanel extends JComponent {
     setTool(Tool.CURSOR);
   }
 
-  public void setSelectedSprite(int spriteIndex) {
-    this.spriteIndex = spriteIndex;
+  public void setSelectedResource(int resourceIndex) {
+    this.resourceIndex = resourceIndex;
     setTool(Tool.BRUSH);
 
     notifyListeners();
   }
 
-  public Sprite getSprite() {
-    return sprites[spriteIndex];
+  public Resource getResource() {
+    return resources[resourceIndex];
   }
 
-  public void equip(Sprite o) {
-    sprites[spriteIndex] = o;
+  public void equip(Resource o) {
+    resources[resourceIndex] = o;
     setTool(Tool.BRUSH);
   }
 
   public void save() {
-    Json json = Json.array(Arrays.asList(sprites), tool -> tool == null ? -1 : tool.id);
+    Json json = Json.array(Arrays.asList(resources), tool -> tool == null ? NULL_ID : tool.getId());
     IO.from(json).to(file);
   }
 
@@ -66,8 +66,8 @@ public class ToolPanel extends JComponent {
     if (file.exists()) {
       int index = 0;
       for (int id : IO.from(file).toJson().asIntArray()) {
-        if (id >= 0) {
-          sprites[index] = armory.resourcesPanel.get(id);
+        if (id != NULL_ID) {
+          resources[index] = armory.resourcesPanel.get(id);
         }
         index++;
       }
@@ -78,7 +78,7 @@ public class ToolPanel extends JComponent {
     Rect r = getDrawBounds();
     if (r.contains(e.getX(), e.getY())) {
       e.consume();
-      setSelectedSprite((int) ((e.getX() - r.x) / (r.w / 9)));
+      setSelectedResource((int) ((e.getX() - r.x) / (r.w / 9)));
 
       if (e.getButton() == MouseEvent.BUTTON1) {
         if (e.getClickCount() == 2) {
@@ -93,33 +93,15 @@ public class ToolPanel extends JComponent {
 
   public void mouseDragged(MouseEvent e) {
     Rect r = getDrawBounds();
-    spriteIndex = (int) ((e.getX() - r.x) / (r.w / 9));
-    spriteIndex = Math.max(spriteIndex, 0);
-    spriteIndex = Math.min(spriteIndex, 8);
+    resourceIndex = (int) ((e.getX() - r.x) / (r.w / 9));
+    resourceIndex = Math.max(resourceIndex, 0);
+    resourceIndex = Math.min(resourceIndex, 8);
   }
 
   public Rect getDrawBounds() {
     double height = Math.min(getHeight(), 72);
     double idealWidth = height * 9 + 26;
     return new Rect((getWidth() - idealWidth) / 2, getHeight() - height, idealWidth, height);
-  }
-
-  private void renderIcon(Sprite tool, Rect r, Graphics3D g) {
-    BufferedImage bi = tool.getFrame();
-    if (tool.autotile) {
-      g.draw(bi, r.x, r.y, r.maxX(), r.maxY(), 0, 32, 64, 96);
-    } else {
-      double ratio = 1.0 * bi.getWidth() / bi.getHeight();
-      if (ratio >= 1) {
-        // scale until the width fits
-        double offset = (r.h - r.h / ratio) / 2;
-        g.draw(bi, r.x, r.y + offset, r.maxX(), r.y + r.h / ratio + offset, 0, 0, bi.getWidth(), bi.getHeight());
-      } else {
-        // scale until the height fits
-        double offset = (r.w - r.w * ratio) / 2;
-        g.draw(bi, r.x + offset, r.y, r.x + r.w * ratio + offset, r.maxY(), 0, 0, bi.getWidth(), bi.getHeight());
-      }
-    }
   }
 
   @Override
@@ -139,17 +121,17 @@ public class ToolPanel extends JComponent {
       g.line(x, r.y + 4, x, getHeight());
     }
 
-    for (int i = 0; i < sprites.length; i++) {
-      Sprite tool = sprites[i];
+    for (int i = 0; i < resources.length; i++) {
+      Resource tool = resources[i];
       if (tool == null) {
         continue;
       }
       double size = Math.min(64, widthPerBox - 10);
       Rect toolBounds = new Rect(r.x + i * widthPerBox + 4, r.y + 4, size, size);
-      renderIcon(tool, toolBounds, g);
+      tool.renderIcon(toolBounds, g);
     }
 
-    g.color(Color.lightGray).draw(new Rect(r.x + spriteIndex * widthPerBox, r.y, widthPerBox, r.h).grow(-2, -2));
+    g.color(Color.lightGray).draw(new Rect(r.x + resourceIndex * widthPerBox, r.y, widthPerBox, r.h).grow(-2, -2));
   }
 
   public void onChange(Runnable callback) {

@@ -1,23 +1,24 @@
 package forge;
 
+import static jasonlib.util.Functions.map;
 import jasonlib.Json;
 import jasonlib.Log;
+import jasonlib.util.Functions;
+import java.util.Collection;
 import java.util.List;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import forge.map.MapData;
 import forge.map.MapObject;
 import forge.ui.Forge;
 
 public class Undo {
 
   private final Forge forge;
-  private final MapData data;
   private final List<Event> events = Lists.newArrayList();
   private int eventIndex = -1; // points to the last event represented in the current state
 
   public Undo(Forge forge) {
     this.forge = forge;
-    this.data = forge.canvas.data;
   }
 
   public void undo() {
@@ -32,7 +33,11 @@ public class Undo {
   }
 
   public void onModify(MapObject o) {
-    add(new ModifyEvent(o));
+    add(new ModifyEvent(ImmutableList.of(o)));
+  }
+
+  public void onModify(Collection<MapObject> objects) {
+    add(new ModifyEvent(objects));
   }
 
   public void onCreate(MapObject o) {
@@ -60,24 +65,27 @@ public class Undo {
 
     @Override
     public void undo() {
-      data.remove(id);
+      forge.canvas.region.remove(id);
     }
   }
 
   private class ModifyEvent extends Event {
-    private final int id;
-    private final Json json;
 
-    public ModifyEvent(MapObject o) {
-      this.id = o.id;
-      json = o.toJson();
+    private final List<Json> json;
+    private final List<Integer> ids;
+
+    public ModifyEvent(Collection<MapObject> objects) {
+      json = map(objects, o -> o.toJson());
+      ids = map(objects, o -> o.id);
     }
 
     @Override
     public void undo() {
-      MapObject old = MapObject.load(json, forge);
-      old.id = id;
-      data.replace(id, old);
+      Functions.splice(json, ids, (json, id) -> {
+        MapObject old = MapObject.load(json, forge.armory);
+        old.id = id;
+        forge.canvas.region.replace(id, old);
+      });
     }
   }
 

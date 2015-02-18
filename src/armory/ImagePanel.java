@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import armory.rez.Sprite;
 import com.google.common.collect.Lists;
 import forge.ui.Forge;
 
@@ -16,6 +17,7 @@ public class ImagePanel extends GPanel {
 
   public static final Color SELECTION_COLOR = new Color(100, 100, 255, 100);
   public static final Color MAPPED_COLOR = new Color(100, 255, 100, 100);
+  public static final Color COLLISION_COLOR = new Color(255, 50, 50, 100);
 
   private final TilesetPanel parent;
   public final BufferedImage bi;
@@ -47,13 +49,7 @@ public class ImagePanel extends GPanel {
 
     g.draw(bi, 0, 0);
 
-    g.color(100, 100, 100, 150);
-    for (int x = Forge.TILE_SIZE; x < getWidth(); x += Forge.TILE_SIZE) {
-      g.line(x, 0, x, getHeight());
-    }
-    for (int y = Forge.TILE_SIZE; y < getHeight(); y += Forge.TILE_SIZE) {
-      g.line(0, y, getWidth(), y);
-    }
+    renderGrid(g, getWidth(), getHeight(), new Color(100, 100, 100, 150));
 
     if (selection != null) {
       g.color(SELECTION_COLOR).fill(selection);
@@ -63,23 +59,37 @@ public class ImagePanel extends GPanel {
       g.color(MAPPED_COLOR).fill(o.bounds);
       g.color(Color.white).draw(o.bounds);
     }
+
+    if (Forge.collisionMode) {
+      g.color(COLLISION_COLOR);
+    }
+  }
+
+  public static void renderGrid(Graphics3D g, int w, int h, Color c) {
+    g.color(c);
+    for (int x = Forge.TILE_SIZE; x < w; x += Forge.TILE_SIZE) {
+      g.line(x, 0, x, h);
+    }
+    for (int y = Forge.TILE_SIZE; y < h; y += Forge.TILE_SIZE) {
+      g.line(0, y, w, y);
+    }
   }
 
   private final MouseAdapter mouseListener = new MouseAdapter() {
     int pressX, pressY, mouseX, mouseY;
-    Sprite pressedObject;
+    Sprite pressedSprite;
 
     @Override
     public void mousePressed(MouseEvent e) {
       mouseX = pressX = e.getX();
       mouseY = pressY = e.getY();
 
-      pressedObject = getObjectAt(pressX, pressY);
-      if (pressedObject == null) {
+      pressedSprite = getObjectAt(pressX, pressY);
+      if (pressedSprite == null) {
         computeSelection();
       } else {
-        selection = pressedObject.bounds;
-        objectPanel.load(pressedObject);
+        selection = pressedSprite.bounds;
+        objectPanel.load(pressedSprite);
       }
     };
 
@@ -88,14 +98,14 @@ public class ImagePanel extends GPanel {
       mouseX = e.getX();
       mouseY = e.getY();
 
-      if (pressedObject == null) {
+      if (pressedSprite == null) {
         computeSelection();
       }
     };
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      if (pressedObject == null) {
+      if (pressedSprite == null) {
         parent.onSelection(selection);
       }
     };

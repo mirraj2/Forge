@@ -1,25 +1,35 @@
 package forge.map;
 
+import static jasonlib.util.Functions.map;
 import static java.util.stream.Collectors.toList;
 import jasonlib.IO;
 import jasonlib.Json;
+import jasonlib.Log;
 import jasonlib.OS;
 import jasonlib.Rect;
 import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
-import armory.Sprite;
+import armory.Armory;
+import armory.rez.Resource;
 import com.google.common.collect.Lists;
-import forge.ui.Forge;
 
-public class MapData {
+public class Region {
 
-  private static final File file = new File(OS.getAppFolder("forge"), "map.json");
+  public static int idCounter = 0;
 
+  public int id;
+  public String name;
   public final List<MapObject> objects = Lists.newArrayList();
 
-  public MapData(Forge forge) {
-    load(forge);
+  public Region() {
+    this.id = idCounter++;
+    this.name = "Untitled Region";
+  }
+
+  public Region(int id, Armory armory) {
+    this.id = id;
+    load(armory);
   }
 
   public void add(MapObject o) {
@@ -37,6 +47,7 @@ public class MapData {
   public void replace(int objectId, MapObject replacement) {
     int index = getIndex(objectId);
     if (index == -1) {
+      Log.debug(map(objects, o -> o.id));
       throw new RuntimeException("Could not find object of id: " + objectId);
     }
     objects.set(index, replacement);
@@ -48,6 +59,7 @@ public class MapData {
         return i;
       }
     }
+    Log.debug("Could not find object " + objectId);
     return -1;
   }
 
@@ -73,6 +85,11 @@ public class MapData {
 
   public void moveForward(MapObject o) {
     int index = objects.indexOf(o);
+
+    if (index == -1) {
+      throw new RuntimeException("Could not find object.");
+    }
+
     if (index == objects.size() - 1) {
       return; // already in the front
     }
@@ -113,24 +130,29 @@ public class MapData {
   /**
    * Gets a matching autotile at this location.
    */
-  public MapObject getAutotile(int x, int y, Sprite sprite) {
-    return getObjectAt(x, y, o -> o.sprite == sprite);
+  public MapObject getAutotile(int x, int y, Resource rez) {
+    return getObjectAt(x, y, o -> o.rez == rez);
   }
 
   public void save() {
     Json json = Json.object()
+        .with("id", id)
+        .with("name", name)
         .with("objects", Json.array(objects, o -> o.toJson()));
 
-    IO.from(json).to(file);
+    IO.from(json).to(getFile());
   }
 
-  private void load(Forge forge) {
-    if (file.exists()) {
-      Json json = IO.from(file).toJson();
-      for (Json o : json.getJson("objects").asJsonArray()) {
-        objects.add(MapObject.load(o, forge));
-      }
+  private void load(Armory armory) {
+    Json json = IO.from(getFile()).toJson();
+    this.name = json.get("name");
+    for (Json o : json.getJson("objects").asJsonArray()) {
+      objects.add(MapObject.load(o, armory));
     }
+  }
+
+  private File getFile() {
+    return new File(OS.getAppFolder("forge"), "region" + id + ".json");
   }
 
 }

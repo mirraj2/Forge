@@ -1,4 +1,4 @@
-package armory;
+package armory.rez;
 
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
@@ -16,22 +16,24 @@ import java.util.Map.Entry;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import net.miginfocom.swing.MigLayout;
+import armory.ImagePanel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import forge.ui.Forge;
 
 public class ResourcesPanel extends GPanel {
 
-  private final Armory armory;
+  private final Forge forge;
 
-  public List<Sprite> sprites = Lists.newArrayList();
-  private final Map<Sprite, Rect> layout = Maps.newHashMap();
+  public List<Resource> resources = Lists.newArrayList();
+  private final Map<Resource, Rect> layout = Maps.newHashMap();
 
-  private Sprite hoverObject;
+  private Resource hoverObject;
 
-  public ResourcesPanel(Armory armory) {
+  public ResourcesPanel(Forge forge) {
     super(new MigLayout("insets 0, gap 0"));
 
-    this.armory = armory;
+    this.forge = forge;
 
     GPanel wrapper = new GPanel(new MigLayout("insets 10"));
     wrapper.setBackground(Color.DARK_GRAY);
@@ -42,24 +44,27 @@ public class ResourcesPanel extends GPanel {
     add(wrapper, "width 100%, height 100%");
 
     listen();
+
+    add(new TagResource(forge));
+    add(new PortalResource(forge));
   }
 
-  public Sprite get(int id) {
-    for (Sprite o : sprites) {
-      if (o.id == id) {
+  public Resource get(int id) {
+    for (Resource o : resources) {
+      if (o.getId() == id) {
         return o;
       }
     }
     return null;
   }
 
-  public void add(Sprite o) {
-    sprites.add(o);
+  public void add(Resource o) {
+    resources.add(o);
     computeLayout();
   }
 
-  public void remove(Sprite o) {
-    sprites.remove(o);
+  public void remove(Resource o) {
+    resources.remove(o);
     computeLayout();
   }
 
@@ -71,7 +76,7 @@ public class ResourcesPanel extends GPanel {
     int x = 0;
     int y = 0;
     int rowHeight = 0;
-    for (Sprite o : sprites) {
+    for (Resource o : resources) {
       int w = o.getWidth();
       int h = o.getHeight();
 
@@ -94,8 +99,8 @@ public class ResourcesPanel extends GPanel {
     Components.refresh(view);
   }
 
-  private Sprite getObjectAt(int x, int y) {
-    for (Entry<Sprite, Rect> e : layout.entrySet()) {
+  private Resource getObjectAt(int x, int y) {
+    for (Entry<Resource, Rect> e : layout.entrySet()) {
       if (e.getValue().contains(x, y)) {
         return e.getKey();
       }
@@ -111,11 +116,23 @@ public class ResourcesPanel extends GPanel {
 
   private final MouseAdapter mouseListener = new MouseAdapter() {
 
+    private boolean addingCollisions; // whether we're adding or removing collisions with this stroke
+
     @Override
     public void mousePressed(MouseEvent e) {
       hoverObject = getObjectAt(e.getX(), e.getY());
 
-      armory.forge.toolPanel.equip(hoverObject);
+      if (Forge.collisionMode) {
+        if (hoverObject == null) {
+          addingCollisions = true;
+        } else {
+          Rect r = layout.get(hoverObject);
+          addingCollisions = !hoverObject.isCollision(e.getX() - r.x, e.getY() - r.y);
+        }
+        handleCollision(e.getX(), e.getY());
+      } else {
+        forge.toolPanel.equip(hoverObject);
+      }
     };
 
     @Override
@@ -124,19 +141,41 @@ public class ResourcesPanel extends GPanel {
     };
 
     @Override
+    public void mouseDragged(MouseEvent e) {
+      handleCollision(e.getX(), e.getY());
+    };
+
+    @Override
     public void mouseExited(MouseEvent e) {
       hoverObject = null;
     };
+
+    private void handleCollision(int x, int y) {
+      Resource rez = getObjectAt(x, y);
+      if (rez != null) {
+        Rect r = layout.get(rez);
+        rez.setCollision(x - r.x, y - r.y, addingCollisions);
+      }
+    }
   };
 
   private final JComponent view = new GPanel() {
     @Override
     protected void paintComponent(Graphics gg) {
       Graphics3D g = Graphics3D.create(gg);
-      for (Sprite o : sprites) {
+
+      for (Resource o : resources) {
         Rect r = layout.get(o);
-        // g.alpha(hoverObject == null || o == hoverObject ? 1 : .5);
-        o.render(g, r.x(), r.y(), hoverObject != null && o != hoverObject);
+        o.render(g, r.x(), r.y());
+
+        if (o == hoverObject && !Forge.collisionMode) {
+          g.color(Color.white).draw(r);
+        }
+      }
+
+      if (Forge.collisionMode) {
+        g.setStroke(1);
+        ImagePanel.renderGrid(g, getWidth(), getHeight(), Color.gray);
       }
     };
 

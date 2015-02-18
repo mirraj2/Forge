@@ -46,4 +46,16 @@ try to make a map
   -autotiling of other things besides flat terrain
     -cliff sides
     
+2/16/15
+
 make moving an object be something that is undo-able
+add tagging of tiles
+make it so you can specify collisions
+add map linking
+make it so you can create a new map and go back to an old map
+
+2/17/15
+
+tile collisions
+ability to create a new map / load an old one
+export to various formats

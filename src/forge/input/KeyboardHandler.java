@@ -25,6 +25,14 @@ public class KeyboardHandler {
   }
 
   private Runnable scroller = () -> {
+    if (GFocus.currentFocusOwner instanceof JTextComponent) {
+      return;
+    }
+
+    if (forge.armory.isVisible()) {
+      return;
+    }
+
     if (GKeyboard.isKeyDown(KeyEvent.VK_W)) {
       canvas.panY -= Forge.TILE_SIZE;
       canvas.hoverLoc = null;
@@ -55,8 +63,12 @@ public class KeyboardHandler {
         return;
       }
 
-      if (code >= '1' && code <= '9') {
-        forge.toolPanel.setSelectedSprite(code - '1');
+      if (code == KeyEvent.VK_E) {
+        forge.armory.setVisible(!forge.armory.isVisible());
+      } else if (code == KeyEvent.VK_C) {
+        Forge.collisionMode = !Forge.collisionMode;
+      } else if (code >= '1' && code <= '9') {
+        forge.toolPanel.setSelectedResource(code - '1');
       }
 
       if (!forge.armory.isVisible()) {
@@ -66,16 +78,16 @@ public class KeyboardHandler {
           canvas.showGrid = !canvas.showGrid;
         } else if (code == KeyEvent.VK_BACK_SPACE) {
           for (MapObject o : canvas.selectedObjects) {
-            canvas.data.remove(o);
+            canvas.region.remove(o);
           }
           canvas.selectedObjects.clear();
         } else if (code == KeyEvent.VK_MINUS) {
           for (MapObject o : canvas.selectedObjects) {
-            canvas.data.moveBack(o);
+            canvas.region.moveBack(o);
           }
         } else if (code == KeyEvent.VK_EQUALS) {
           for (MapObject o : canvas.selectedObjects) {
-            canvas.data.moveForward(o);
+            canvas.region.moveForward(o);
           }
         } else {
           if (GKeyboard.isSystemShortcut(e.getModifiers())) {

@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.JScrollPane;
+import armory.rez.Sprite;
 import com.google.common.collect.Lists;
 
 public class TilesetPanel extends GPanel {

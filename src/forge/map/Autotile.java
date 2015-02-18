@@ -8,7 +8,9 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
 import java.util.function.BiConsumer;
-import armory.Sprite;
+import armory.ImagePanel;
+import armory.rez.Resource;
+import armory.rez.Sprite;
 import com.google.common.collect.ImmutableList;
 import forge.input.MouseHandler;
 import forge.ui.Forge;
@@ -45,6 +47,7 @@ public class Autotile extends MapObject {
     Rect r = grid.bounds;
     r = new Rect(r.x * TILE_SIZE, r.y * TILE_SIZE, (r.w + 1) * TILE_SIZE, (r.h + 1) * TILE_SIZE);
     r = r.grow(TILE_SIZE, TILE_SIZE);
+    r = r.changeSize(0, cliffHeight * TILE_SIZE);
     return r;
   }
 
@@ -73,7 +76,11 @@ public class Autotile extends MapObject {
         int j = (int) y / TILE_SIZE;
         Point p = Autotiles.compute(i, j, grid, cliffHeight);
         if (p != Autotiles.EMPTY) {
-          g.draw(sprite.getFrame(), x, y, p.x, p.y, 16, 16);
+          Sprite sprite = (Sprite) rez;
+          g.draw(sprite.getFrame(), x, y, p.x, p.y, TILE_SIZE, TILE_SIZE);
+          if (Forge.collisionMode && sprite.isCollision(p.x, p.y)) {
+            g.color(ImagePanel.COLLISION_COLOR).fillRect(x, y, TILE_SIZE, TILE_SIZE);
+          }
         }
       }
     }
@@ -87,7 +94,7 @@ public class Autotile extends MapObject {
   public List<ObjectHandle> getHandles() {
     if (isCliff) {
       Rect r = getBounds();
-      int size = 10;
+      int size = 20;
       ObjectHandle handle = new ObjectHandle().color(Color.green)
           .loc(new Rect(r.centerX() - size / 2, r.maxY() + 20 + cliffHeight * Forge.TILE_SIZE, size, size))
           .onDrag(onDrag);
@@ -105,7 +112,7 @@ public class Autotile extends MapObject {
   @Override
   public Json toJson() {
     Json ret = Json.object()
-        .with("sprite", sprite.id)
+        .with("sprite", rez.getId())
         .with("grid", grid.serialize());
     if (cliffHeight > 0) {
       ret.with("cliff_height", cliffHeight);
@@ -113,10 +120,9 @@ public class Autotile extends MapObject {
     return ret;
   }
 
-  public static Autotile load(Json json, Forge forge) {
-    Sprite sprite = forge.armory.getSprite(json.getInt("sprite"));
+  public static Autotile load(Json json, Resource rez) {
     TileGrid grid = TileGrid.parse(json.get("grid"));
-    Autotile ret = new Autotile(sprite, grid);
+    Autotile ret = new Autotile((Sprite) rez, grid);
     if (json.has("cliff_height")) {
       ret.cliffHeight = json.getInt("cliff_height");
     }

@@ -9,6 +9,8 @@ import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.swing.JTabbedPane;
+import armory.rez.Resource;
+import armory.rez.ResourcesPanel;
 import com.google.common.base.Stopwatch;
 import forge.ui.Forge;
 
@@ -24,10 +26,11 @@ public class Armory extends GPanel {
 
   public final JTabbedPane tabs = new JTabbedPane();
 
-  public final ResourcesPanel resourcesPanel = new ResourcesPanel(this);
+  public final ResourcesPanel resourcesPanel;
 
   public Armory(Forge forge) {
     this.forge = forge;
+    this.resourcesPanel = new ResourcesPanel(forge);
 
     add(tabs, "width 100%, height 100%");
 
@@ -37,10 +40,10 @@ public class Armory extends GPanel {
     load();
   }
 
-  public Sprite getSprite(int id){
-    for (Sprite sprite : resourcesPanel.sprites) {
-      if (sprite.id == id) {
-        return sprite;
+  public Resource getResource(int id) {
+    for (Resource rez : resourcesPanel.resources) {
+      if (rez.getId() == id) {
+        return rez;
       }
     }
     return null;

@@ -8,19 +8,21 @@ import jasonlib.swing.component.GCanvas;
 import java.awt.Color;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import armory.ImagePanel;
-import armory.Sprite;
+import armory.rez.Resource;
+import armory.rez.Sprite;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
-import forge.map.MapData;
 import forge.map.MapObject;
 import forge.map.ObjectHandle;
+import forge.map.Region;
 import forge.ui.ToolPanel.Tool;
 
 public class Canvas extends GCanvas {
 
   public final Forge forge;
-  public final MapData data;
+  public Region region;
 
   public int panX, panY;
 
@@ -32,10 +34,15 @@ public class Canvas extends GCanvas {
 
   public Canvas(Forge forge) {
     this.forge = forge;
-    this.data = new MapData(forge);
+    setRegion(forge.world.regions.get(0));
   }
 
-  public void select(MapObject o){
+  public void setRegion(Region region) {
+    Log.info("Setting region to: " + region.name);
+    this.region = region;
+  }
+
+  public void select(MapObject o) {
     selectedObjects.clear();
     if (o != null) {
       selectedObjects.add(o);
@@ -44,6 +51,10 @@ public class Canvas extends GCanvas {
 
   @Override
   protected void render(Graphics3D g) {
+    render(g, new Rect(panX, panY, getWidth(), getHeight()), o -> true);
+  }
+
+  protected void render(Graphics3D g, Rect clip, Predicate<MapObject> objectFilter) {
     Stopwatch watch = Stopwatch.createStarted();
 
     if (showGrid) {
@@ -51,14 +62,13 @@ public class Canvas extends GCanvas {
       drawGrid(g, Color.GRAY, TILE_SIZE * 2);
     }
 
-    Rect clip = new Rect(panX, panY, getWidth(), getHeight());
-
     g.translate(-panX, -panY);
 
-    for (MapObject o : data.objects) {
-      // if (hoverObject instanceof Autotile) {
-      // g.alpha(o == hoverObject ? 1 : .6);
-      // }
+    for (MapObject o : region.objects) {
+      if (!objectFilter.test(o)) {
+        continue;
+      }
+
       o.render(g, clip);
 
       if (forge.toolPanel.tool == Tool.CURSOR) {
@@ -78,11 +88,11 @@ public class Canvas extends GCanvas {
     }
 
     if (hoverLoc != null) {
-      Sprite s = forge.toolPanel.getSprite();
-      if (s.autotile) {
-        g.draw(s.subimage, hoverLoc.x - 8, hoverLoc.y - 8, 0, 0, 32, 32);
-      } else {
-        s.render(g, hoverLoc.x, hoverLoc.y);
+      Resource rez = forge.toolPanel.getResource();
+      if(rez.isAutotile()){
+        g.draw(((Sprite) rez).subimage, hoverLoc.x - 8, hoverLoc.y - 8, 0, 0, 32, 32);
+      } else{
+        rez.render(g, hoverLoc.x, hoverLoc.y);
       }
     }
 
@@ -91,7 +101,7 @@ public class Canvas extends GCanvas {
       g.setStroke(2.0).color(Color.white).draw(selectionBox);
     }
 
-    if (watch.elapsed(TimeUnit.MILLISECONDS) > 10) {
+    if (watch.elapsed(TimeUnit.MILLISECONDS) > 30) {
       Log.debug("rendered in " + watch);
     }
   }

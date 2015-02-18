@@ -46,6 +46,12 @@ public class DragHandler {
       }
 
       forge.armory.importTileset(name, bi);
+    } else if (o instanceof String) {
+      String s = (String) o;
+      BufferedImage bi = IO.fromURL(s).toImage();
+      forge.armory.importTileset("untitled", bi);
+    } else {
+      Log.warn("Unhandled type: " + o.getClass());
     }
   }
 
