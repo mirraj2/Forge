@@ -59,3 +59,7 @@ make it so you can create a new map and go back to an old map
 tile collisions
 ability to create a new map / load an old one
 export to various formats
+
+2/20/15
+
+Make youtube video(s) showing it off. Give it to other people to use and try to get people to make stuff!

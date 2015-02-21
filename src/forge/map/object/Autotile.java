@@ -47,10 +47,16 @@ public class Autotile extends MapObject {
 
   @Override
   public Rect getBounds() {
+    return getBounds(true);
+  }
+
+  public Rect getBounds(boolean includeCliff) {
     Rect r = grid.bounds;
     r = new Rect(r.x * TILE_SIZE, r.y * TILE_SIZE, (r.w + 1) * TILE_SIZE, (r.h + 1) * TILE_SIZE);
     r = r.grow(TILE_SIZE, TILE_SIZE);
-    r = r.changeSize(0, cliffHeight * TILE_SIZE);
+    if (includeCliff) {
+      r = r.changeSize(0, cliffHeight * TILE_SIZE);
+    }
     return r;
   }
 
@@ -96,7 +102,7 @@ public class Autotile extends MapObject {
   @Override
   public List<ObjectHandle> getHandles() {
     if (isCliff) {
-      Rect r = getBounds();
+      Rect r = getBounds(false);
       int size = 20;
       ObjectHandle handle = new ObjectHandle().color(Color.green)
           .loc(new Rect(r.centerX() - size / 2, r.maxY() + 20 + cliffHeight * Forge.TILE_SIZE, size, size))
@@ -107,7 +113,7 @@ public class Autotile extends MapObject {
   }
 
   private final BiConsumer<Integer, Integer> onDrag = (x, y) -> {
-    Rect r = getBounds();
+    Rect r = getBounds(false);
     cliffHeight = (int) ((y - (r.maxY() + 20)) / Forge.TILE_SIZE);
     cliffHeight = Math.max(cliffHeight, 0);
   };
