@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import forge.map.MapObject;
+import forge.map.object.MapObject;
 import forge.ui.Forge;
 
 public class Undo {

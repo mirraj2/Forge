@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import armory.Armory;
 import armory.rez.Resource;
 import com.google.common.collect.Lists;
+import forge.map.object.MapObject;
 
 public class Region {
 

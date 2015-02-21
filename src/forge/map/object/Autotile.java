@@ -1,4 +1,4 @@
-package forge.map;
+package forge.map.object;
 
 import static forge.ui.Forge.TILE_SIZE;
 import jasonlib.Json;
@@ -13,6 +13,9 @@ import armory.rez.Resource;
 import armory.rez.Sprite;
 import com.google.common.collect.ImmutableList;
 import forge.input.MouseHandler;
+import forge.map.Autotiles;
+import forge.map.ObjectHandle;
+import forge.map.TileGrid;
 import forge.ui.Forge;
 
 public class Autotile extends MapObject {

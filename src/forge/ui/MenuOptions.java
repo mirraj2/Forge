@@ -1,22 +1,16 @@
 package forge.ui;
 
-import jasonlib.IO;
+import jasonlib.Config;
 import jasonlib.OS;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
-import java.awt.Desktop;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import forge.map.MapObject;
-import forge.map.TagObject;
+import forge.Exporter;
 
 public class MenuOptions {
 
@@ -28,41 +22,53 @@ public class MenuOptions {
     JMenuBar bar = new JMenuBar();
 
     JMenu fileMenu = new JMenu("Export As");
+    fileMenu.add(new JMenuItem(codeFormat));
     fileMenu.add(new JMenuItem(exportImage));
     bar.add(fileMenu);
 
     Forge.frame.setJMenuBar(bar);
   }
 
-  private final Action exportImage = new AbstractAction("Image") {
+  private final Action codeFormat = new AbstractAction("Game-Ready Format") {
     @Override
     public void actionPerformed(ActionEvent e) {
-      Canvas canvas = forge.canvas;
-
-      Rect r = null;
-      for (MapObject o : canvas.region.objects) {
-        r = o.getBounds().union(r);
+      File dir = getExportDir();
+      if (dir == null) {
+        return;
       }
+      new Exporter(forge).export(dir);
+    }
+  };
 
-      canvas.selectedObjects.clear();
-      canvas.hoverLoc = null;
-      canvas.hoverObject = null;
-      canvas.showGrid = false;
-      canvas.panX = r.x();
-      canvas.panY = r.y();
+  private File getExportDir() {
+    Config config = Config.load("forge");
+    String s = config.get("export_dir");
+    if (s != null) {
+      return new File(s);
+    }
+    JFileChooser jfc = new JFileChooser(OS.getDesktop());
+    jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    jfc.setMultiSelectionEnabled(false);
+    int i = jfc.showSaveDialog(null);
+    if (i != JFileChooser.APPROVE_OPTION) {
+      return null;
+    }
+    File file = jfc.getSelectedFile();
+    if (file.getName().equals(file.getParentFile().getName())) {
+      file = file.getParentFile();
+    }
 
-      BufferedImage bi = new BufferedImage(r.w(), r.h(), BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g = bi.createGraphics();
-      canvas.render(Graphics3D.create(g), r, o -> !(o instanceof TagObject));
-      g.dispose();
+    file.mkdirs();
 
-      File file = new File(OS.getDesktop(), "export.png");
-      IO.from(bi).to(file);
-      try {
-        Desktop.getDesktop().open(file);
-      } catch (IOException e1) {
-        e1.printStackTrace();
-      }
+    config.put("export_dir", file.getPath());
+
+    return file;
+  }
+
+  private final Action exportImage = new AbstractAction("PNG Image") {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      new Exporter(forge).exportPNG(new File(OS.getDesktop(), "export.png"));
     }
   };
 

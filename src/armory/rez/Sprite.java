@@ -10,8 +10,9 @@ import java.util.List;
 import armory.ImagePanel;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
-import forge.map.Autotile;
-import forge.map.MapObject;
+import forge.BitSet;
+import forge.map.object.Autotile;
+import forge.map.object.MapObject;
 import forge.ui.Forge;
 
 public class Sprite implements Resource {
@@ -31,25 +32,26 @@ public class Sprite implements Resource {
   private final List<BufferedImage> animationFrames = Lists.newArrayList();
   private int animationOffset = (int) (Math.random() * 10000); // make it so the animations don't look sync'd
 
-  private final long[] collisionData; // each long holds 64 booleans
+  private final BitSet collisionData;
+
+  // private final long[] collisionData; // each long holds 64 booleans
 
   public Sprite(int id, BufferedImage bi, Rect bounds) {
     this(id, bi, bounds, null);
   }
 
-  public Sprite(int id, BufferedImage bi, Rect bounds, long[] collisionData) {
+  public Sprite(int id, BufferedImage bi, Rect bounds, BitSet collisionData) {
     this.id = id;
     this.bi = bi;
     this.subimage = bi.getSubimage(bounds.x(), bounds.y(), bounds.w(), bounds.h());
     this.bounds = bounds;
     
     if(collisionData == null){
-      this.collisionData = new long[(bounds.w() / TILE_SIZE) * (bounds.h() / TILE_SIZE)];
+      this.collisionData = new BitSet((bounds.w() / TILE_SIZE) * (bounds.h() / TILE_SIZE));
     } else {
       this.collisionData = collisionData;
     }
     
-
     if (bounds.h() == 96) {
       if (bounds.w() == 64) {
         autotile = true;
@@ -92,24 +94,13 @@ public class Sprite implements Resource {
     }
 
     if (Forge.collisionMode) {
-      int w = bounds.w() / TILE_SIZE, h = bounds.h() / TILE_SIZE;
-      // for (int i = 0; i < w; i++) {
-      // for (int j = 0; j < h; j++) {
-      // int index = i + j * w;
-      // long word = collisionData
-      // }
-      // }
-
+      int w = bounds.w() / TILE_SIZE;
       g.color(ImagePanel.COLLISION_COLOR);
-      for (int i = 0; i < collisionData.length; i++) {
-        long word = collisionData[i];
-        for (int j = 0; j < 64; j++) {
-          if ((word & (1L << j)) != 0) {
-            int index = i * 64 + j;
-            int xLoc = (index % w) * TILE_SIZE;
-            int yLoc = (index / w) * TILE_SIZE;
-            g.fillRect(x + xLoc, y + yLoc, TILE_SIZE, TILE_SIZE);
-          }
+      for (int i = 0; i < collisionData.size(); i++) {
+        if (collisionData.get(i)) {
+          int xLoc = (i % w) * TILE_SIZE;
+          int yLoc = (i / w) * TILE_SIZE;
+          g.fillRect(x + xLoc, y + yLoc, TILE_SIZE, TILE_SIZE);
         }
       }
     }
@@ -180,18 +171,13 @@ public class Sprite implements Resource {
   @Override
   public boolean isCollision(double x, double y) {
     int index = getIndex(x, y);
-    long word = collisionData[index / 64];
-    return (word & (1L << index)) != 0;
+    return collisionData.get(index);
   }
 
   @Override
   public void setCollision(double x, double y, boolean b) {
     int index = getIndex(x, y);
-    if (b) {
-      collisionData[index / 64] |= (1L << index);
-    } else {
-      collisionData[index / 64] &= ~(1L << index);
-    }
+    collisionData.set(index, b);
   }
 
   private int getIndex(double x, double y) {
@@ -225,6 +211,15 @@ public class Sprite implements Resource {
     return new MapObject(this, Rect.parse(json.get("loc")));
   }
 
+  public boolean hasAnyCollisions() {
+    for (long word : collisionData.words) {
+      if (word != 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public Json toJson() {
     Json ret = Json.object()
         .with("id", id)
@@ -239,16 +234,8 @@ public class Sprite implements Resource {
           .with("speed", animationSpeed));
     }
 
-    boolean hasCollision = false;
-    for (long word : collisionData) {
-      if (word != 0) {
-        hasCollision = true;
-        break;
-      }
-    }
-
-    if (hasCollision) {
-      ret.with("collisions", Json.array(Longs.asList(collisionData)));
+    if (hasAnyCollisions()) {
+      ret.with("collisions", Json.array(Longs.asList(collisionData.words)));
     }
 
     return ret;
@@ -258,9 +245,9 @@ public class Sprite implements Resource {
     int id = json.getInt("id");
     idCounter = Math.max(idCounter, id + 1);
 
-    long[] collisionData = null;
+    BitSet collisionData = null;
     if (json.has("collisions")) {
-      collisionData = Longs.toArray(json.getJson("collisions").asLongArray());
+      collisionData = new BitSet(json.getJson("collisions").asLongArray());
     }
 
     Sprite ret = new Sprite(id, bi, Rect.parse(json.get("bounds")), collisionData);

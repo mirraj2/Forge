@@ -7,8 +7,8 @@ import jasonlib.swing.Graphics3D;
 import java.awt.Font;
 import javax.swing.JOptionPane;
 import forge.input.MouseHandler;
-import forge.map.MapObject;
-import forge.map.TagObject;
+import forge.map.object.MapObject;
+import forge.map.object.TagObject;
 import forge.ui.Forge;
 
 public class TagResource implements ListenerResource {

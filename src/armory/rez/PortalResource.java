@@ -7,10 +7,10 @@ import jasonlib.swing.Graphics3D;
 import java.util.Set;
 import java.util.UUID;
 import com.google.common.collect.Sets;
-import forge.map.MapObject;
-import forge.map.PortalObject;
 import forge.map.Region;
-import forge.map.TagObject;
+import forge.map.object.MapObject;
+import forge.map.object.PortalObject;
+import forge.map.object.TagObject;
 import forge.ui.Forge;
 
 public class PortalResource extends TagResource {

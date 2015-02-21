@@ -1,4 +1,4 @@
-package forge.map;
+package forge.map.object;
 
 import jasonlib.Json;
 import jasonlib.Rect;
@@ -7,6 +7,7 @@ import java.util.List;
 import armory.Armory;
 import armory.rez.Resource;
 import com.google.common.collect.ImmutableList;
+import forge.map.ObjectHandle;
 
 public class MapObject {
 

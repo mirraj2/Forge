@@ -1,4 +1,4 @@
-package forge.map;
+package forge.map.object;
 
 import jasonlib.Json;
 import jasonlib.Rect;

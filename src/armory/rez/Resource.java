@@ -3,7 +3,7 @@ package armory.rez;
 import jasonlib.Json;
 import jasonlib.Rect;
 import jasonlib.swing.Graphics3D;
-import forge.map.MapObject;
+import forge.map.object.MapObject;
 
 public interface Resource {
 

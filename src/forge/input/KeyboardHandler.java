@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.swing.text.JTextComponent;
-import forge.map.MapObject;
+import forge.map.object.MapObject;
 import forge.ui.Canvas;
 import forge.ui.Forge;
 

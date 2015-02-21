@@ -14,9 +14,9 @@ import armory.rez.Resource;
 import armory.rez.Sprite;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
-import forge.map.MapObject;
 import forge.map.ObjectHandle;
 import forge.map.Region;
+import forge.map.object.MapObject;
 import forge.ui.ToolPanel.Tool;
 
 public class Canvas extends GCanvas {
@@ -38,7 +38,6 @@ public class Canvas extends GCanvas {
   }
 
   public void setRegion(Region region) {
-    Log.info("Setting region to: " + region.name);
     this.region = region;
   }
 
@@ -50,11 +49,11 @@ public class Canvas extends GCanvas {
   }
 
   @Override
-  protected void render(Graphics3D g) {
+  public void render(Graphics3D g) {
     render(g, new Rect(panX, panY, getWidth(), getHeight()), o -> true);
   }
 
-  protected void render(Graphics3D g, Rect clip, Predicate<MapObject> objectFilter) {
+  public void render(Graphics3D g, Rect clip, Predicate<MapObject> objectFilter) {
     Stopwatch watch = Stopwatch.createStarted();
 
     if (showGrid) {
