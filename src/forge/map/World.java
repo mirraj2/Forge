@@ -2,6 +2,7 @@ package forge.map;
 
 import jasonlib.IO;
 import jasonlib.Json;
+import jasonlib.Log;
 import jasonlib.OS;
 import java.io.File;
 import java.util.List;
@@ -21,8 +22,13 @@ public class World {
     }
 
     for (int id : IO.from(file).toJson().asIntArray()) {
-      regions.add(new Region(id, armory));
-      Region.idCounter = Math.max(Region.idCounter, id + 1);
+      try {
+        regions.add(new Region(id, armory));
+        Region.idCounter = Math.max(Region.idCounter, id + 1);
+      } catch (Exception e) {
+        Log.error("Problem loading region: " + id);
+        e.printStackTrace();
+      }
     }
   }
 
