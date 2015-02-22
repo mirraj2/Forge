@@ -1,14 +1,18 @@
 package forge.ui;
 
 import jasonlib.Config;
+import jasonlib.OS;
 import jasonlib.swing.component.GFrame;
 import jasonlib.swing.component.GPanel;
 import jasonlib.swing.global.GFocus;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JOptionPane;
 import net.miginfocom.swing.MigLayout;
 import armory.Armory;
 import forge.Undo;
@@ -61,20 +65,27 @@ public class Forge extends GPanel {
     System.exit(0);
   };
 
-  public static void main(String[] args) {
-    System.setProperty("apple.laf.useScreenMenuBar", "true");
+  public static void main(String[] args) throws Exception {
+    try {
+      System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-    Forge forge = new Forge();
-    frame = new GFrame("The Forge")
-        .content(forge)
-        .size(dim.width - 100, dim.height - 100)
-        .disposeOnClose()
-        .onClose(forge.saveAndExit)
-        .start();
-    new MenuOptions(forge);
-    frame.setBackground(Color.black);
-    GFocus.focus(forge);
+      Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+      Forge forge = new Forge();
+      frame = new GFrame("The Forge")
+          .content(forge)
+          .size(dim.width - 100, dim.height - 100)
+          .disposeOnClose()
+          .onClose(forge.saveAndExit)
+          .start();
+      new MenuOptions(forge);
+      frame.setBackground(Color.black);
+      GFocus.focus(forge);
+    } catch (Exception e) {
+      e.printStackTrace();
+      e.printStackTrace(new PrintStream(new File(OS.getDesktop(), "forge_error.txt")));
+      JOptionPane.showMessageDialog(null,
+          "There was an error starting Forge. Check the forge_error.txt file on your desktop.");
+    }
   }
 
 }
