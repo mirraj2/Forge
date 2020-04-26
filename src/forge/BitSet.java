@@ -1,6 +1,7 @@
 package forge;
 
 import java.util.Collection;
+
 import com.google.common.primitives.Longs;
 
 public class BitSet {

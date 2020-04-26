@@ -1,18 +1,21 @@
 package armory;
 
 import static java.lang.Integer.parseInt;
-import jasonlib.swing.Graphics3D;
-import jasonlib.swing.component.GButton;
-import jasonlib.swing.component.GCheckbox;
-import jasonlib.swing.component.GLabel;
-import jasonlib.swing.component.GPanel;
-import jasonlib.swing.component.GTextField;
-import jasonlib.swing.global.Components;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+
 import javax.swing.JComponent;
+
 import armory.rez.Sprite;
+import swing.Graphics3D;
+import swing.component.GButton;
+import swing.component.GCheckbox;
+import swing.component.GLabel;
+import swing.component.GPanel;
+import swing.component.GTextField;
+import swing.global.Components;
 
 public class ObjectDetailsPanel extends GPanel {
 

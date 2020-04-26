@@ -1,10 +1,5 @@
 package forge.ui;
 
-import jasonlib.IO;
-import jasonlib.Json;
-import jasonlib.OS;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -12,10 +7,18 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.swing.JComponent;
+
+import com.google.common.collect.Lists;
+
 import armory.Armory;
 import armory.rez.Resource;
-import com.google.common.collect.Lists;
+import ox.IO;
+import ox.Json;
+import ox.OS;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class ToolPanel extends JComponent {
 

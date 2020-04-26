@@ -1,10 +1,5 @@
 package armory.rez;
 
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
-import jasonlib.swing.component.GPanel;
-import jasonlib.swing.component.GScrollPane;
-import jasonlib.swing.global.Components;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,13 +8,21 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
-import net.miginfocom.swing.MigLayout;
-import armory.ImagePanel;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import armory.ImagePanel;
 import forge.ui.Forge;
+import net.miginfocom.swing.MigLayout;
+import ox.Rect;
+import swing.Graphics3D;
+import swing.component.GPanel;
+import swing.component.GScrollPane;
+import swing.global.Components;
 
 public class ResourcesPanel extends GPanel {
 

@@ -1,8 +1,9 @@
 package forge.map;
 
-import jasonlib.Rect;
 import java.awt.Color;
 import java.util.function.BiConsumer;
+
+import ox.Rect;
 
 /**
  * A handle, attached to some object, that the user can drag.

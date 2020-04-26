@@ -1,18 +1,21 @@
 package armory;
 
-import jasonlib.IO;
-import jasonlib.Json;
-import jasonlib.Log;
-import jasonlib.OS;
-import jasonlib.swing.component.GPanel;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.swing.JTabbedPane;
+
+import com.google.common.base.Stopwatch;
+
 import armory.rez.Resource;
 import armory.rez.ResourcesPanel;
-import com.google.common.base.Stopwatch;
 import forge.ui.Forge;
+import ox.IO;
+import ox.Json;
+import ox.Log;
+import ox.OS;
+import swing.component.GPanel;
 
 /**
  * Resource management

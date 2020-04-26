@@ -1,17 +1,20 @@
 package armory.rez;
 
 import static com.google.common.collect.Iterables.filter;
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
+
 import java.util.Set;
 import java.util.UUID;
+
 import com.google.common.collect.Sets;
+
 import forge.map.Region;
 import forge.map.object.MapObject;
 import forge.map.object.PortalObject;
 import forge.map.object.TagObject;
 import forge.ui.Forge;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class PortalResource extends TagResource {
 

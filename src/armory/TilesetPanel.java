@@ -1,17 +1,20 @@
 package armory;
 
-import jasonlib.IO;
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.component.GPanel;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
+
 import javax.swing.Box;
 import javax.swing.JScrollPane;
-import armory.rez.Sprite;
+
 import com.google.common.collect.Lists;
+
+import armory.rez.Sprite;
+import ox.IO;
+import ox.Json;
+import ox.Rect;
+import swing.component.GPanel;
 
 public class TilesetPanel extends GPanel {
 

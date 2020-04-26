@@ -1,20 +1,22 @@
 package forge.input;
 
-import jasonlib.swing.global.GFocus;
-import jasonlib.swing.global.GKeyboard;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
 import javax.swing.text.JTextComponent;
+
 import forge.map.object.MapObject;
 import forge.ui.Canvas;
 import forge.ui.Forge;
+import swing.global.GFocus;
+import swing.global.GKeyboard;
 
 public class KeyboardHandler {
 
-  private final Forge forge;
-  private final Canvas canvas;
+  private Forge forge;
+  private Canvas canvas;
 
   public KeyboardHandler(Forge forge) {
     this.forge = forge;
@@ -24,7 +26,7 @@ public class KeyboardHandler {
     Executors.newScheduledThreadPool(1).scheduleAtFixedRate(scroller, 0, 30, TimeUnit.MILLISECONDS);
   }
 
-  private Runnable scroller = () -> {
+  private final Runnable scroller = () -> {
     if (GFocus.currentFocusOwner instanceof JTextComponent) {
       return;
     }

@@ -1,9 +1,11 @@
 package forge.map;
 
 import static com.google.common.base.Preconditions.checkState;
-import jasonlib.Rect;
+
 import java.nio.ByteBuffer;
 import java.util.Base64;
+
+import ox.Rect;
 
 public class TileGrid {
 

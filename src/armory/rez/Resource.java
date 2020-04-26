@@ -1,9 +1,9 @@
 package armory.rez;
 
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
 import forge.map.object.MapObject;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public interface Resource {
 

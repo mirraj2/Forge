@@ -1,15 +1,18 @@
 package forge;
 
-import static jasonlib.util.Functions.map;
-import jasonlib.Json;
-import jasonlib.Log;
-import jasonlib.util.Functions;
+import static ox.util.Functions.map;
+
 import java.util.Collection;
 import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import forge.map.object.MapObject;
 import forge.ui.Forge;
+import ox.Json;
+import ox.Log;
+import ox.util.Functions;
 
 public class Undo {
 

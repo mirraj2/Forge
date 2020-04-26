@@ -1,11 +1,12 @@
 package forge.map.object;
 
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
 import java.awt.Color;
+
 import armory.rez.Resource;
 import armory.rez.TagResource;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class TagObject extends MapObject {
 

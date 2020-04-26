@@ -1,15 +1,18 @@
 package armory.rez;
 
 import static forge.ui.Forge.TILE_SIZE;
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
+
 import java.awt.Font;
+
 import javax.swing.JOptionPane;
+
 import forge.input.MouseHandler;
 import forge.map.object.MapObject;
 import forge.map.object.TagObject;
 import forge.ui.Forge;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class TagResource implements ListenerResource {
 

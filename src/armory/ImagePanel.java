@@ -1,17 +1,19 @@
 package armory;
 
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
-import jasonlib.swing.component.GPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import armory.rez.Sprite;
+
 import com.google.common.collect.Lists;
+
+import armory.rez.Sprite;
 import forge.ui.Forge;
+import ox.Rect;
+import swing.Graphics3D;
+import swing.component.GPanel;
 
 public class ImagePanel extends GPanel {
 

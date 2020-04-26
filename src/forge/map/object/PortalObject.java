@@ -1,12 +1,13 @@
 package forge.map.object;
 
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Ellipse2D;
+
 import armory.rez.Resource;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class PortalObject extends TagObject {
 

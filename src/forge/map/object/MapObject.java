@@ -1,13 +1,15 @@
 package forge.map.object;
 
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
 import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+
 import armory.Armory;
 import armory.rez.Resource;
-import com.google.common.collect.ImmutableList;
 import forge.map.ObjectHandle;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class MapObject {
 

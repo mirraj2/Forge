@@ -1,19 +1,22 @@
 package forge.map;
 
-import static jasonlib.util.Functions.map;
 import static java.util.stream.Collectors.toList;
-import jasonlib.IO;
-import jasonlib.Json;
-import jasonlib.Log;
-import jasonlib.OS;
-import jasonlib.Rect;
+import static ox.util.Functions.map;
+
 import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
+
+import com.google.common.collect.Lists;
+
 import armory.Armory;
 import armory.rez.Resource;
-import com.google.common.collect.Lists;
 import forge.map.object.MapObject;
+import ox.IO;
+import ox.Json;
+import ox.Log;
+import ox.OS;
+import ox.Rect;
 
 public class Region {
 

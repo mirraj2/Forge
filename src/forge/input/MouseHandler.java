@@ -1,12 +1,13 @@
 package forge.input;
 
 import static forge.ui.Forge.TILE_SIZE;
-import jasonlib.Rect;
-import jasonlib.swing.global.GKeyboard;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.SwingUtilities;
+
 import armory.rez.ListenerResource;
 import armory.rez.Resource;
 import armory.rez.Sprite;
@@ -18,6 +19,8 @@ import forge.ui.Canvas;
 import forge.ui.Forge;
 import forge.ui.ToolPanel;
 import forge.ui.ToolPanel.Tool;
+import ox.Rect;
+import swing.global.GKeyboard;
 
 public class MouseHandler {
 

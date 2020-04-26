@@ -1,19 +1,22 @@
 package armory.rez;
 
 import static forge.ui.Forge.TILE_SIZE;
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
+
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import armory.ImagePanel;
+
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
+
+import armory.ImagePanel;
 import forge.BitSet;
 import forge.map.object.Autotile;
 import forge.map.object.MapObject;
 import forge.ui.Forge;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class Sprite implements Resource {
 

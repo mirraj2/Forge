@@ -1,23 +1,26 @@
 package forge.ui;
 
 import static forge.ui.Forge.TILE_SIZE;
-import jasonlib.Log;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
-import jasonlib.swing.component.GCanvas;
+
 import java.awt.Color;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.Sets;
+
 import armory.ImagePanel;
 import armory.rez.Resource;
 import armory.rez.Sprite;
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.Sets;
 import forge.map.ObjectHandle;
 import forge.map.Region;
 import forge.map.object.MapObject;
 import forge.ui.ToolPanel.Tool;
+import ox.Log;
+import ox.Rect;
+import swing.Graphics3D;
+import swing.component.GCanvas;
 
 public class Canvas extends GCanvas {
 

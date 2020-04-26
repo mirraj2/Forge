@@ -1,10 +1,5 @@
 package forge.ui;
 
-import jasonlib.Config;
-import jasonlib.OS;
-import jasonlib.swing.component.GFrame;
-import jasonlib.swing.component.GPanel;
-import jasonlib.swing.global.GFocus;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -12,14 +7,21 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
 import javax.swing.JOptionPane;
-import net.miginfocom.swing.MigLayout;
+
 import armory.Armory;
 import forge.Undo;
 import forge.input.DragHandler;
 import forge.input.KeyboardHandler;
 import forge.input.MouseHandler;
 import forge.map.World;
+import net.miginfocom.swing.MigLayout;
+import ox.Config;
+import ox.OS;
+import swing.component.GFrame;
+import swing.component.GPanel;
+import swing.global.GFocus;
 
 public class Forge extends GPanel {
 

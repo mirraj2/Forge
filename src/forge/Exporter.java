@@ -2,11 +2,7 @@ package forge;
 
 import static com.google.common.collect.Iterables.filter;
 import static forge.ui.Forge.TILE_SIZE;
-import jasonlib.IO;
-import jasonlib.Json;
-import jasonlib.Log;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
+
 import java.awt.Desktop;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -16,11 +12,13 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
-import armory.rez.Sprite;
+
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Longs;
+
+import armory.rez.Sprite;
 import forge.map.Region;
 import forge.map.object.Autotile;
 import forge.map.object.MapObject;
@@ -28,6 +26,11 @@ import forge.map.object.PortalObject;
 import forge.map.object.TagObject;
 import forge.ui.Canvas;
 import forge.ui.Forge;
+import ox.IO;
+import ox.Json;
+import ox.Log;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class Exporter {
 

@@ -1,22 +1,25 @@
 package forge.map.object;
 
 import static forge.ui.Forge.TILE_SIZE;
-import jasonlib.Json;
-import jasonlib.Rect;
-import jasonlib.swing.Graphics3D;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.util.List;
 import java.util.function.BiConsumer;
+
+import com.google.common.collect.ImmutableList;
+
 import armory.ImagePanel;
 import armory.rez.Resource;
 import armory.rez.Sprite;
-import com.google.common.collect.ImmutableList;
 import forge.input.MouseHandler;
 import forge.map.Autotiles;
 import forge.map.ObjectHandle;
 import forge.map.TileGrid;
 import forge.ui.Forge;
+import ox.Json;
+import ox.Rect;
+import swing.Graphics3D;
 
 public class Autotile extends MapObject {
 
