@@ -44,7 +44,11 @@ public class MapObject {
   public void render(Graphics3D g, Rect clip) {
     for (int i = 0; i < location.w; i += rez.getWidth()) {
       for (int j = 0; j < location.h; j += rez.getHeight()) {
-        rez.render(g, i + location.x, j + location.y);
+        double x = i + location.x;
+        double y = j + location.y;
+        if (clip.intersects(x, y, rez.getWidth(), rez.getHeight())) {
+          rez.render(g, x, y);
+        }
       }
     }
   }

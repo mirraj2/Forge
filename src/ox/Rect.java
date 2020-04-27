@@ -27,10 +27,14 @@ public class Rect {
   }
 
   public boolean intersects(Rect other) {
-    if ((x >= other.x + other.w) || (x + w <= other.x)) {
+    return intersects(other.x, other.y, other.w, other.h);
+  }
+
+  public boolean intersects(double x, double y, double w, double h) {
+    if ((this.x >= x + w) || (this.x + this.w <= x)) {
       return false;
     }
-    if ((y >= other.y + other.h) || (y + h <= other.y)) {
+    if ((this.y >= y + h) || (this.y + this.h <= y)) {
       return false;
     }
     return true;
