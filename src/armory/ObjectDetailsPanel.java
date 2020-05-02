@@ -8,7 +8,7 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
-import armory.rez.Sprite;
+import armory.rez.ImageResource;
 import swing.Graphics3D;
 import swing.component.GButton;
 import swing.component.GCheckbox;
@@ -26,7 +26,7 @@ public class ObjectDetailsPanel extends GPanel {
   private final GTextField rowsInput = new GTextField().columns(3).focusSelects();
   private final GTextField colsInput = new GTextField().columns(3).focusSelects();
   private final GButton deleteButton = new GButton("Delete");
-  private Sprite selected = null;
+  private ImageResource selected = null;
 
   public ObjectDetailsPanel(TilesetPanel parent) {
     this.parent = parent;
@@ -53,7 +53,7 @@ public class ObjectDetailsPanel extends GPanel {
     }
   }
 
-  public void load(Sprite o) {
+  public void load(ImageResource o) {
     this.selected = o;
 
     Components.refresh(objectRenderer);

@@ -55,17 +55,16 @@ public class MapObject {
 
   public Json toJson() {
     return Json.object()
-        .with("sprite", rez.getId())
+        .with("imageId", rez.getId())
         .with("loc", location.serialize());
   }
 
-  public List<ObjectHandle> getHandles(){
+  public List<ObjectHandle> getHandles() {
     return ImmutableList.of();
   }
 
-
   public static MapObject load(Json json, Armory armory) {
-    Resource rez = armory.getResource(json.getInt("sprite"));
+    Resource rez = armory.getResource(json.getInt("imageId"));
     return rez.loadObject(json);
   }
 

@@ -3,11 +3,9 @@ package forge;
 import static com.google.common.collect.Iterables.filter;
 import static forge.ui.Forge.TILE_SIZE;
 
-import java.awt.Desktop;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.Set;
@@ -18,7 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Longs;
 
-import armory.rez.Sprite;
+import armory.rez.ImageResource;
 import forge.map.Region;
 import forge.map.object.Autotile;
 import forge.map.object.MapObject;
@@ -29,6 +27,7 @@ import forge.ui.Forge;
 import ox.IO;
 import ox.Json;
 import ox.Log;
+import ox.OS;
 import ox.Rect;
 import swing.Graphics3D;
 
@@ -41,6 +40,7 @@ public class Exporter {
   }
 
   public void export(File dir) {
+    Log.info("Exporting to " + dir);
     Stopwatch watch = Stopwatch.createStarted();
 
     Json json = Json.array();
@@ -83,10 +83,10 @@ public class Exporter {
     // g.dispose();
 
 
-    Set<Sprite> spritesSeen = Sets.newHashSet();
+    Set<ImageResource> spritesSeen = Sets.newHashSet();
     for (MapObject o : filter(region.objects, o -> !isPartOfBackground(o))) {
-      if (o.rez instanceof Sprite) {
-        Sprite s = (Sprite) o.rez;
+      if (o.rez instanceof ImageResource) {
+        ImageResource s = (ImageResource) o.rez;
         if (spritesSeen.add(s)) {
           IO.from(s.subimage).to(new File(dir, s.id + ".png"));
         }
@@ -119,8 +119,8 @@ public class Exporter {
             }
           }
         }
-      } else if (o.rez instanceof Sprite) {
-        Sprite s = (Sprite) o.rez;
+      } else if (o.rez instanceof ImageResource) {
+        ImageResource s = (ImageResource) o.rez;
         Rect r = o.location;
         for (int x = r.x(); x < r.maxX(); x += TILE_SIZE) {
           for (int y = r.y(); y < r.maxY(); y += TILE_SIZE) {
@@ -144,8 +144,8 @@ public class Exporter {
       return true;
     }
 
-    if (o.rez instanceof Sprite) {
-      Sprite sprite = (Sprite) o.rez;
+    if (o.rez instanceof ImageResource) {
+      ImageResource sprite = (ImageResource) o.rez;
       if (!sprite.hasAnyCollisions()) {
         return true;
       }
@@ -194,11 +194,7 @@ public class Exporter {
   public void exportPNG(File file) {
     BufferedImage bi = renderToImage(forge.canvas.region, o -> !(o instanceof TagObject));
     IO.from(bi).to(file);
-    try {
-      Desktop.getDesktop().open(file);
-    } catch (IOException e1) {
-      e1.printStackTrace();
-    }
+    OS.open(file);
   }
 
   private Rect getBounds(Region region) {

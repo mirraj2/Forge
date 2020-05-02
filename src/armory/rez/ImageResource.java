@@ -18,7 +18,7 @@ import ox.Json;
 import ox.Rect;
 import swing.Graphics3D;
 
-public class Sprite implements Resource {
+public class ImageResource implements Resource {
 
   public static int idCounter = 0;
 
@@ -39,11 +39,11 @@ public class Sprite implements Resource {
 
   // private final long[] collisionData; // each long holds 64 booleans
 
-  public Sprite(int id, BufferedImage bi, Rect bounds) {
+  public ImageResource(int id, BufferedImage bi, Rect bounds) {
     this(id, bi, bounds, null);
   }
 
-  public Sprite(int id, BufferedImage bi, Rect bounds, BitSet collisionData) {
+  public ImageResource(int id, BufferedImage bi, Rect bounds, BitSet collisionData) {
     this.id = id;
     this.bi = bi;
     this.subimage = bi.getSubimage(bounds.x(), bounds.y(), bounds.w(), bounds.h());
@@ -244,7 +244,7 @@ public class Sprite implements Resource {
     return ret;
   }
 
-  public static Sprite load(Json json, BufferedImage bi) {
+  public static ImageResource load(Json json, BufferedImage bi) {
     int id = json.getInt("id");
     idCounter = Math.max(idCounter, id + 1);
 
@@ -253,7 +253,7 @@ public class Sprite implements Resource {
       collisionData = new BitSet(json.getJson("collisions").asLongArray());
     }
 
-    Sprite ret = new Sprite(id, bi, Rect.parse(json.get("bounds")), collisionData);
+    ImageResource ret = new ImageResource(id, bi, Rect.parse(json.get("bounds")), collisionData);
 
     ret.tags = json.get("tags");
     ret.autotile = json.getBoolean("autotile");

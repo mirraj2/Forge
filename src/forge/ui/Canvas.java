@@ -12,7 +12,7 @@ import com.google.common.collect.Sets;
 
 import armory.ImagePanel;
 import armory.rez.Resource;
-import armory.rez.Sprite;
+import armory.rez.ImageResource;
 import forge.map.ObjectHandle;
 import forge.map.Region;
 import forge.map.object.MapObject;
@@ -92,7 +92,7 @@ public class Canvas extends GCanvas {
     if (hoverLoc != null) {
       Resource rez = forge.toolPanel.getResource();
       if(rez.isAutotile()){
-        g.draw(((Sprite) rez).subimage, hoverLoc.x - 8, hoverLoc.y - 8, 0, 0, 32, 32);
+        g.draw(((ImageResource) rez).subimage, hoverLoc.x - 8, hoverLoc.y - 8, 0, 0, 32, 32);
       } else{
         rez.render(g, hoverLoc.x, hoverLoc.y);
       }

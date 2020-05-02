@@ -10,7 +10,7 @@ import javax.swing.JScrollPane;
 
 import com.google.common.collect.Lists;
 
-import armory.rez.Sprite;
+import armory.rez.ImageResource;
 import ox.IO;
 import ox.Json;
 import ox.Rect;
@@ -25,7 +25,7 @@ public class TilesetPanel extends GPanel {
   public final ObjectDetailsPanel objectPanel;
   public final ImagePanel imagePanel;
 
-  public final List<Sprite> mapObjects = Lists.newArrayList();
+  public final List<ImageResource> mapObjects = Lists.newArrayList();
 
   public TilesetPanel(Armory armory, int id, String name, BufferedImage bi) {
     this.armory = armory;
@@ -45,7 +45,7 @@ public class TilesetPanel extends GPanel {
     TilesetPanel ret = new TilesetPanel(armory, json.getInt("id"), json.get("name"), bi);
 
     for (Json object : json.getJson("objects").asJsonArray()) {
-      Sprite o = Sprite.load(object, bi);
+      ImageResource o = ImageResource.load(object, bi);
       ret.mapObjects.add(o);
       armory.resourcesPanel.add(o);
     }
@@ -80,14 +80,14 @@ public class TilesetPanel extends GPanel {
   }
 
   public void onSelection(Rect selection) {
-    Sprite m = new Sprite(Sprite.idCounter++, bi, selection);
+    ImageResource m = new ImageResource(ImageResource.idCounter++, bi, selection);
     mapObjects.add(m);
     imagePanel.selection = null;
     objectPanel.load(m);
     armory.resourcesPanel.add(m);
   }
 
-  public void delete(Sprite object) {
+  public void delete(ImageResource object) {
     mapObjects.remove(object);
     imagePanel.selection = null;
     armory.resourcesPanel.remove(object);

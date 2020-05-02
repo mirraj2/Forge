@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 
 import armory.rez.ListenerResource;
 import armory.rez.Resource;
-import armory.rez.Sprite;
+import armory.rez.ImageResource;
 import forge.map.ObjectHandle;
 import forge.map.object.Autotile;
 import forge.map.object.MapObject;
@@ -67,7 +67,7 @@ public class MouseHandler {
       int x = canvas.hoverLoc.x(), y = canvas.hoverLoc.y();
       selected = canvas.region.getAutotile(x, y, rez);
       if (selected == null) {
-        selected = new Autotile((Sprite) rez, x / TILE_SIZE, y / TILE_SIZE);
+        selected = new Autotile((ImageResource) rez, x / TILE_SIZE, y / TILE_SIZE);
       }
       canvas.hoverLoc = null;
     } else {

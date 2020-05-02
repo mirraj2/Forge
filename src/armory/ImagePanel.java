@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 
 import com.google.common.collect.Lists;
 
-import armory.rez.Sprite;
+import armory.rez.ImageResource;
 import forge.ui.Forge;
 import ox.Rect;
 import swing.Graphics3D;
@@ -57,7 +57,7 @@ public class ImagePanel extends GPanel {
       g.color(SELECTION_COLOR).fill(selection);
       g.color(Color.white).draw(selection);
     }
-    for (Sprite o : parent.mapObjects) {
+    for (ImageResource o : parent.mapObjects) {
       g.color(MAPPED_COLOR).fill(o.bounds);
       g.color(Color.white).draw(o.bounds);
     }
@@ -79,7 +79,7 @@ public class ImagePanel extends GPanel {
 
   private final MouseAdapter mouseListener = new MouseAdapter() {
     int pressX, pressY, mouseX, mouseY;
-    Sprite pressedSprite;
+    ImageResource pressedSprite;
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -117,8 +117,8 @@ public class ImagePanel extends GPanel {
       selection = r.constrain(0, 0, bi.getWidth(), bi.getHeight());
     }
 
-    private Sprite getObjectAt(int x, int y) {
-      for (Sprite o : Lists.reverse(parent.mapObjects)) {
+    private ImageResource getObjectAt(int x, int y) {
+      for (ImageResource o : Lists.reverse(parent.mapObjects)) {
         if (o.bounds.contains(x, y)) {
           return o;
         }

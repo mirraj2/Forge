@@ -10,8 +10,8 @@ import java.util.function.BiConsumer;
 import com.google.common.collect.ImmutableList;
 
 import armory.ImagePanel;
+import armory.rez.ImageResource;
 import armory.rez.Resource;
-import armory.rez.Sprite;
 import forge.input.MouseHandler;
 import forge.map.Autotiles;
 import forge.map.ObjectHandle;
@@ -27,13 +27,13 @@ public class Autotile extends MapObject {
   private final boolean isCliff;
   private int cliffHeight = 0;
 
-  public Autotile(Sprite sprite, int startX, int startY) {
+  public Autotile(ImageResource sprite, int startX, int startY) {
     this(sprite, new TileGrid());
 
     addAutotile(startX, startY);
   }
 
-  private Autotile(Sprite sprite, TileGrid grid) {
+  private Autotile(ImageResource sprite, TileGrid grid) {
     super(sprite, null);
 
     this.grid = grid;
@@ -88,7 +88,7 @@ public class Autotile extends MapObject {
         int j = (int) y / TILE_SIZE;
         Point p = Autotiles.compute(i, j, grid, cliffHeight);
         if (p != Autotiles.EMPTY) {
-          Sprite sprite = (Sprite) rez;
+          ImageResource sprite = (ImageResource) rez;
           g.draw(sprite.getFrame(), x, y, p.x, p.y, TILE_SIZE, TILE_SIZE);
           if (Forge.collisionMode && sprite.isCollision(p.x, p.y)) {
             g.color(ImagePanel.COLLISION_COLOR).fillRect(x, y, TILE_SIZE, TILE_SIZE);
@@ -124,7 +124,7 @@ public class Autotile extends MapObject {
   @Override
   public Json toJson() {
     Json ret = Json.object()
-        .with("sprite", rez.getId())
+        .with("imageId", rez.getId())
         .with("grid", grid.serialize());
     if (cliffHeight > 0) {
       ret.with("cliff_height", cliffHeight);
@@ -134,7 +134,7 @@ public class Autotile extends MapObject {
 
   public static Autotile load(Json json, Resource rez) {
     TileGrid grid = TileGrid.parse(json.get("grid"));
-    Autotile ret = new Autotile((Sprite) rez, grid);
+    Autotile ret = new Autotile((ImageResource) rez, grid);
     if (json.has("cliff_height")) {
       ret.cliffHeight = json.getInt("cliff_height");
     }
