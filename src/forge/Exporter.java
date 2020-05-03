@@ -14,7 +14,6 @@ import java.util.function.Predicate;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.primitives.Longs;
 
 import armory.rez.ImageResource;
 import forge.map.Region;
@@ -68,20 +67,8 @@ public class Exporter {
         .with("id", region.id)
         .with("name", region.name)
         .with("objects", objects)
+        .with("bounds", r.serialize())
         .with("collisions", getCollisions(region, r));
-
-    // BitSet b = new BitSet(json.getJson("collisions").asLongArray());
-    // Graphics3D g = Graphics3D.create(backgroundImage.createGraphics());
-    // g.color(Color.red);
-    // for (int x = 0; x < backgroundImage.getWidth(); x += TILE_SIZE) {
-    // for (int y = 0; y < backgroundImage.getHeight(); y += TILE_SIZE) {
-    // if (b.get(x / TILE_SIZE + (y / TILE_SIZE) * (backgroundImage.getWidth() / TILE_SIZE))) {
-    // g.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-    // }
-    // }
-    // }
-    // g.dispose();
-
 
     Set<ImageResource> spritesSeen = Sets.newHashSet();
     for (MapObject o : filter(region.objects, o -> !isPartOfBackground(o))) {
@@ -136,7 +123,7 @@ public class Exporter {
 
     BitSet collisions = objectCollisions.or(tileLocations.invert());
 
-    return Json.array(Longs.asList(collisions.words));
+    return Json.array(collisions.getWords32());
   }
 
   private boolean isPartOfBackground(MapObject o) {

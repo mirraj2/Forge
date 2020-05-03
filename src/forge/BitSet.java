@@ -1,7 +1,9 @@
 package forge;
 
 import java.util.Collection;
+import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
 
 public class BitSet {
@@ -45,6 +47,26 @@ public class BitSet {
       words[i] = words[i] | b.words[i];
     }
     return this;
+  }
+
+  public int[] getWords32() {
+    int[] ret = new int[words.length * 2];
+    for (int i = 0; i < words.length; i++) {
+      long word = words[i];
+      ret[i * 2] = (int) word;
+      ret[i * 2 + 1] = (int) (word >> 32);
+    }
+    return ret;
+  }
+
+  public static BitSet fromInts(List<Integer> ints) {
+    List<Long> data = Lists.newArrayListWithCapacity(ints.size() / 2);
+    for (int i = 0; i < ints.size(); i += 2) {
+      int a = ints.get(i);
+      long b = ints.get(i + 1);
+      data.add((b << 32) | (a & 0xffffffffL));
+    }
+    return new BitSet(data);
   }
 
   // public void setAllToTrue() {
