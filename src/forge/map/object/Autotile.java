@@ -102,6 +102,10 @@ public class Autotile extends MapObject {
     grid.add(i, j);
   }
 
+  public void removeAutotile(int i, int j) {
+    grid.remove(i, j);
+  }
+
   @Override
   public List<ObjectHandle> getHandles() {
     if (isCliff) {

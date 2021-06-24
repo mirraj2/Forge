@@ -50,6 +50,19 @@ public class TileGrid {
     expandBounds(i, j);
   }
 
+  public void remove(int i, int j) {
+    int x = i - xOffset;
+    if (x < 0 || x >= grid.length) {
+      return;
+    }
+    int y = j - yOffsets[x];
+    boolean[] col = grid[x];
+    if (y < 0 || y >= col.length) {
+      return;
+    }
+    col[y] = false;
+  }
+
   private void expandBounds(int i, int j) {
     if (bounds == null) {
       bounds = new Rect(i, j, 0, 0);

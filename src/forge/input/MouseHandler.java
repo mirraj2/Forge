@@ -8,9 +8,9 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
 
+import armory.rez.ImageResource;
 import armory.rez.ListenerResource;
 import armory.rez.Resource;
-import armory.rez.ImageResource;
 import forge.map.ObjectHandle;
 import forge.map.object.Autotile;
 import forge.map.object.MapObject;
@@ -31,7 +31,7 @@ public class MouseHandler {
   private int clickCount;
   private int pressX, pressY, mouseX, mouseY;
   private int offsetX, offsetY;
-  private boolean mouseInside, dragTriggered;
+  private boolean mouseInside, metaDown, dragTriggered;
 
   private Rect startingLoc;
 
@@ -132,7 +132,12 @@ public class MouseHandler {
           }
           for (int i = -radius; i <= radius; i++) {
             for (int j = -radius; j <= radius; j++) {
-              ((Autotile) o).addAutotile(mouseX / TILE_SIZE + i, mouseY / TILE_SIZE + j);
+              Autotile autotile = (Autotile) o;
+              if (metaDown) {
+                autotile.removeAutotile(mouseX / TILE_SIZE + i, mouseY / TILE_SIZE + j);
+              } else {
+                autotile.addAutotile(mouseX / TILE_SIZE + i, mouseY / TILE_SIZE + j);
+              }
             }
           }
         } else {
@@ -228,6 +233,8 @@ public class MouseHandler {
       mouseX = pressX = e.getX() + canvas.panX;
       mouseY = pressY = e.getY() + canvas.panY;
       clickCount = e.getClickCount();
+      metaDown = e.isMetaDown();
+
       mousePress();
     };
 
